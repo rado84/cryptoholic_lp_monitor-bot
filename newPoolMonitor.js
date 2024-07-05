@@ -30,18 +30,19 @@ process.on("message",async (message)=>{
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),"");
     var totalSupply;
     var largestHolders;
+    var largestHoldingsPercentage=0
     console.log(tokenInfo)
     const distribution=[];
     try {
         totalSupply=await connection.getTokenSupply(tokenPubkey)
         largestHolders=await connection.getTokenLargestAccounts(tokenPubkey);
         var largestHoldings=0;
-        for(var i=0;i<largestHolders.value.length;i++){
+        for(var i=0;i<(largestHolders.value.length>=10?10:largestHolders.value.length);i++){
             const oneLargetHoldingPercent=largestHolders.value[i].uiAmount*100/totalSupply.value.uiAmount
             largestHoldings+=oneLargetHoldingPercent;
             distribution.push(`${oneLargetHoldingPercent.toFixed(2)}%`);
         }
-        const largestHoldingsPercentage=largestHoldings;
+        largestHoldingsPercentage=largestHoldings;
         
         console.log(`The largest ${largestHolders.value.length} holders are owning ${largestHoldingsPercentage.toFixed(2)}% of total supply.`)
     } catch (error) {
@@ -80,7 +81,9 @@ process.on("message",async (message)=>{
         marketCap,
         lpValue:solAmount,
         image:tokenAsset.result.content.files.cdn_uri,
-        poolId:swapmarket.poolKeys.id.toString()
+        poolId:swapmarket.poolKeys.id.toString(),
+        largestHolders:(largestHolders.value.length>=10?10:largestHolders.value.length),
+        largestHoldingsPercentage
     })
     var timer=0;
     setInterval(async () => {

@@ -59,7 +59,7 @@ process.on("message",async message=>{
         totalSupply=await connection.getTokenSupply(tokenPubkey)
         largestHolders=await connection.getTokenLargestAccounts(tokenPubkey);
         var largestHoldings=0;
-        for(var i=0;i<largestHolders.value.length;i++){
+        for(var i=0;i<(largestHolders.value.length>=10?10:largestHolders.value.length);i++){
             const oneLargetHoldingPercent=largestHolders.value[i].uiAmount*100/totalSupply.value.uiAmount
             largestHoldings+=oneLargetHoldingPercent;
             distribution.push(`${oneLargetHoldingPercent.toFixed(2)}%`);
@@ -105,7 +105,7 @@ process.on("message",async message=>{
       marketCap,poolId:poolId,
       token:targetToken,
       image:tokenAsset.result.content.files.cdn_uri,
-      largestHolders:largestHolders.value.length,
+      largestHolders:(largestHolders.value.length>=10?10:largestHolders.value.length),
       largestHoldingsPercentage
     })
     var timer=0;
