@@ -15,15 +15,23 @@ const {  LIQUIDITY_STATE_LAYOUT_V4, Liquidity,MARKET_STATE_LAYOUT_V3,Market,pool
 const WebSocket = require('ws');
 const Client=require("@triton-one/yellowstone-grpc");
 
-const ws = new WebSocket(process.env.WEBSOCKET_API);
+const connection = new web3.Connection(process.env.RPC_API);//Web3.js Connection
+const helius_connection=new web3.Connection(process.env.HELIUS_RPC);
+
+const signatures=[];
+const monitorProcesses={}
+const newPoolMonitorProcesses={};
+const pumpfunProcesses={};
 
 const monitorProcessPath=path.resolve(__dirname,"monitor.js");
 const newPoolMonitorProcessPath=path.resolve(__dirname,"newPoolMonitor.js");
+const pumpfunMonitorPath=path.resolve(__dirname,"pumpfunMonitor.js")
 
 const SOL_MINT_ADDRESS = 'So11111111111111111111111111111111111111112';
 const SOL_MINT_PUBKEY=new web3.PublicKey(SOL_MINT_ADDRESS);
 const RAYDIUM_OPENBOOK_AMM=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
 const raydium_program_id=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
+
 
 // const client = new Client("http://15.204.241.116:10000/");
 
@@ -58,12 +66,76 @@ bot.command("finish",ctx=>{
     botClients.splice(chatIdIndex,1);
 })
 
-const connection = new web3.Connection(process.env.RPC_API);//Web3.js Connection
-const helius_connection=new web3.Connection(process.env.HELIUS_RPC);
+const ws = new WebSocket(process.env.PUMPFUN_API);
 
-const signatures=[];
-const monitorProcesses={}
-const newPoolMonitorProcesses={};
+ws.on('open', function open() {
+
+    // Subscribing to token creation events
+    let payload = {
+        method: "subscribeNewToken", 
+      }
+    ws.send(JSON.stringify(payload));
+});
+  
+ws.on('message', async (data)=> {
+    const message=JSON.parse(data)
+    if(message.txType=="create"){
+        let payload = {
+            method: "subscribeTokenTrade",
+            keys: [message.mint] // array of token CAs to watch
+        }
+        ws.send(JSON.stringify(payload))
+        if(pumpfunProcesses[message.mint]) {
+            console.log("ALREADY MONITORING!!!")
+            return;
+        }
+        pumpfunProcesses[message.mint]=fork(pumpfunMonitorPath);
+        console.log({number_of_pumpfun_processes:Object.keys(pumpfunProcesses).length})
+        pumpfunProcesses[message.mint].on("message",processMessage=>{
+            if(processMessage.bought){
+                botClients.forEach(async oneClient=>{
+                    // await bot.api.sendPhoto(oneClient,message.image);
+                    bot.api.sendMessage(oneClient,
+                        `<b>💊 Buy on Pump.fun 💊</b>\n\n<b>Name : </b><b>${processMessage.name}</b>\n<b>Description : </b>\n<b>${processMessage.description}</b>\n<b>Symbol : </b><b>${processMessage.symbol}</b>\n\n<b>SOL on BondingCurve</b> : <b>${processMessage.solAmount}</b> SOL\n<b>Number of Buy Trades : </b><b>${processMessage.numberOfBuyTrades}</b>/${processMessage.numberOfTrades}\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
+                        ,{
+                            parse_mode:"HTML",
+                            link_preview_options:{
+                                is_disabled:true
+                            },
+                        }
+                    );
+                    
+                })
+            }
+        });
+        pumpfunProcesses[message.mint].on("exit",()=>{
+            delete pumpfunProcesses[message.mint]
+        })
+        pumpfunProcesses[message.mint].send({token:message.mint,...message})
+        // try {
+        //     const tokenAssetRes=await fetch(`https://pumpportal.fun/api/data/token-info?ca=${message.mint}`);
+        //     const tokenAsset=await tokenAssetRes.json();
+        //     botClients.forEach(async oneClient=>{
+        //         // await bot.api.sendPhoto(oneClient,message.image);
+        //         bot.api.sendMessage(oneClient,
+        //             `<b>💊 New Token on Pump.fun 💊</b>\n\n<b>Name : </b><b>${tokenAsset.data.name}</b>\n<b>Description : </b>\n<b>${tokenAsset.data.description}</b>\n<b>Symbol : </b><b>${tokenAsset.data.symbol}</b>\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
+        //             ,{
+        //                 parse_mode:"HTML",
+        //                 link_preview_options:{
+        //                     is_disabled:true
+        //                 },
+        //             }
+        //         );
+        //     })
+        // } catch (error) {
+        //     console.log(error)
+        // }
+        
+    }else{
+        if(!pumpfunProcesses[message.mint]) return;
+        pumpfunProcesses[message.mint].send({token:message.mint,...message})
+    }
+});
 
 connection.onLogs(TOKEN_PROGRAM_ID,async ({logs,signature,err})=>{
     if(logs.some(oneLog=>oneLog.includes("burn")||oneLog.includes("Burn")||oneLog.includes("burnChecked"))){
@@ -99,7 +171,7 @@ connection.onLogs(TOKEN_PROGRAM_ID,async ({logs,signature,err})=>{
                     botClients.forEach(async oneClient=>{
                         // await bot.api.sendPhoto(oneClient,message.image);
                         bot.api.sendMessage(oneClient,
-                            `<b>🔥 Burned Pool 🔥</b>\n\n<b>Name : </b><b>${message.name}</b>\n<b>Description : </b>\n<b>${message.description}</b>\n<b>Symbol : </b><b>${message.symbol}</b>\n\n<b>Liquidity : </b><b>${message.lpValue} SOL</b>\n<b>Market Cap : </b><b>${Number(message.marketCap).toFixed(2)} $</b>\n<b>Largest holdings : </b>\n<b>${message.largestHolders}</b> wallets are owning <b>${message.largestHoldingsPercentage} %</b> \n\n<b>Mint : </b>\n\n<code>${message.token}</code>\n\n<a href="https://solscan.io/token/${mint}">Solscan</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.poolId}">Photon</a> | <a href="https://dexscreener.com/solana/${message.poolId}">DexScreener</a>\n`
+                            `<b>🔥 Burned Pool 🔥</b>\n\n<b>Name : </b><b>${message.name}</b>\n<b>Description : </b>\n<b>${message.description}</b>\n<b>Symbol : </b><b>${message.symbol}</b>\n\n<b>Liquidity : </b><b>${message.lpValue} SOL</b>\n<b>Market Cap : </b><b>${Number(message.marketCap).toFixed(2)} $</b>\n<b>Largest holdings : </b>\n<b>${message.largestHolders}</b> wallets are owning <b>${Number(message.largestHoldingsPercentage).toFixed(2)} %</b> \n\n<b>Mint : </b>\n\n<code>${message.token}</code>\n\n<a href="https://solscan.io/token/${mint}">Solscan</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.poolId}">Photon</a> | <a href="https://dexscreener.com/solana/${message.poolId}">DexScreener</a>\n`
                             ,{
                                 parse_mode:"HTML",
                                 link_preview_options:{
@@ -148,7 +220,7 @@ connection.onLogs(raydium_program_id,async ({logs,signature,err})=>{
                 botClients.forEach(async oneClient=>{
                     // await bot.api.sendPhoto(oneClient,message.image);
                     bot.api.sendMessage(oneClient,
-                        `<b>⚡️ New Pool ⚡️</b>\n\n<b>Name : </b>${message.name}\n<b>Description : </b>\n${message.description}\n<b>Symbol : </b>${message.symbol}\n\n<b>Liquidity : </b><b>${message.lpValue} SOL</b>\n<b>Market Cap : </b><b>${Number(message.marketCap).toFixed(2)} $</b>\n<b>Largest holdings : </b>\n<b>${message.largestHolders}</b> wallets are owning <b>${Number(message.largestHoldingsPercentage).toFixed(2)} %</b> \n\n<b>Mint : </b>\n\n<code>${targetToken}</code>\n\n<a href="https://solscan.io/token/${targetToken}">Solscan</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.poolId}">Photon</a> | <a href="https://dexscreener.com/solana/${message.poolId}">DexScreener</a>\n`
+                        `<b>⚡️ New Pool ⚡️</b>\n\n<b>Name : </b>${message.name}\n<b>Description : </b>\n${message.description}\n<b>Symbol : </b>${message.symbol}\n\n<b>Liquidity : </b><b>${message.lpValue} SOL</b>\n<b>Market Cap : </b><b>${Number(message.marketCap).toFixed(2)} $</b>\n<b>Largest holdings : </b>\n<b>${message.largestHolders}</b> wallets are owning <b>${Number(message.largestHoldingsPercentage).toFixed(2)} %</b> \n\n<b>Mint : </b>\n\n<code>${targetToken}</code>\n\n<a href="https://solscan.io/token/${message.lpMint}">Solscan</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.poolId}">Photon</a> | <a href="https://dexscreener.com/solana/${message.poolId}">DexScreener</a>\n`
                         ,{
                             parse_mode:"HTML",
                             link_preview_options:{

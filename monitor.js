@@ -32,8 +32,6 @@ process.on("message",async message=>{
     
     const poolInfo=LIQUIDITY_STATE_LAYOUT_V4.decode(accounts[0].account.data);
     const poolId=accounts[0].pubkey.toBase58();
-    // if((poolInfo.baseMint!=SOL_MINT_PUBKEY)&&(poolInfo.quoteMint!=SOL_MINT_PUBKEY)) process.exit(null);
-    console.log(poolInfo)
     console.log(`https://dexscreener.com/solana/${accounts[0].pubkey.toBase58()}`);
     const targetToken=((poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?poolInfo.quoteMint.toString():poolInfo.baseMint.toString());
     const solVault=((poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?poolInfo.baseVault:poolInfo.quoteVault);
@@ -95,7 +93,6 @@ process.on("message",async message=>{
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),`INITIAL MARKET CAP : ${marketCap}\n`);
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),`INITIAL LIQUIDITY : ${solAmount.value.uiAmount}\n`);
     const tokenAsset=await getTokenAsset(targetToken);
-    console.log(tokenAsset)
     const tokenContent=tokenAsset.result.content.metadata;
     process.send({
       name:tokenContent.name,

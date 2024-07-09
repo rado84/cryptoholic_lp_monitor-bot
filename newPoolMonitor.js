@@ -51,7 +51,6 @@ process.on("message",async (message)=>{
     }
     const tokenAsset=await getTokenAsset(targetToken);
     const tokenContent=tokenAsset.result.content.metadata;
-    console.log(tokenAsset.result.content.files)
     const swapmarket=await getSwapMarketRapid(targetToken,quoted);
     if(!swapmarket) {
         console.log("NO AMM POOL!!!")
@@ -83,7 +82,8 @@ process.on("message",async (message)=>{
         image:tokenAsset.result.content.files.cdn_uri,
         poolId:swapmarket.poolKeys.id.toString(),
         largestHolders:(largestHolders.value.length>=10?10:largestHolders.value.length),
-        largestHoldingsPercentage
+        largestHoldingsPercentage,
+        lpMint:swapmarket.poolInfo.lpMint.toString()
     })
     var timer=0;
     setInterval(async () => {

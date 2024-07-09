@@ -255,11 +255,44 @@ const getSwapMarketRapid=async (tokenAddress,quoted)=>{
   // console.log(poolKeys)
   return {poolInfo,marketInfo,poolKeys};
 }
+
+const pumpfunSwapTransaction=async (tokenAddress,buy=true)=>{
+  const PRIVATE_KEY = Uint8Array.from(JSON.parse(process.env.PRIVATE_KEY));
+  const connection=new Connection(process.env.RPC_API)
+  const wallet = Keypair.fromSecretKey(PRIVATE_KEY);
+  const response = await fetch(`https://pumpportal.fun/api/trade-local`, {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+          "publicKey": wallet.publicKey.toBase58(),  // Your wallet public key
+          "action": buy?"buy":"sell",                 // "buy" or "sell"
+          "mint": tokenAddress,         // contract address of the token you want to trade
+          "denominatedInSol": buy?'true':'false',     // "true" if amount is amount of SOL, "false" if amount is number of tokens
+          "amount": buy?0.0001:"100%",                  // amount of SOL or tokens
+          "slippage": 10,                   // percent slippage allowed
+          "priorityFee": 0.00001,          // priority fee
+          "pool": "pump"                   // exchange to trade on. "pump" or "raydium"
+      })
+  });
+  if(response.status === 200){ // successfully generated transaction
+    const data = await response.arrayBuffer();
+    const tx = VersionedTransaction.deserialize(new Uint8Array(data));
+    tx.sign([wallet]);
+    const signature = await connection.sendTransaction(tx)
+    console.log("Transaction: https://solscan.io/tx/" + signature);
+  } else {
+      console.log(response.statusText); // log error
+  }
+}
+
 module.exports={
     getJupiterPrice,
     getJupiterQuote,
     getSwapMarket,
     getSwapMarketRapid,
     getBirdeyePrice,
-    getTokenAsset
+    getTokenAsset,
+    pumpfunSwapTransaction
 }
