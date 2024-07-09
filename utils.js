@@ -166,7 +166,7 @@ const getSwapMarketRapid=async (tokenAddress,quoted)=>{
   var accounts=await connection.getProgramAccounts(
       raydium_program_id,
       {
-        commitment: 'confirmed',
+        commitment: "processed",
         filters: [
           { dataSize: LIQUIDITY_STATE_LAYOUT_V4.span },
           {
@@ -266,24 +266,26 @@ const pumpfunSwapTransaction=async (tokenAddress,buy=true)=>{
           "Content-Type": "application/json"
       },
       body: JSON.stringify({
-          "publicKey": wallet.publicKey.toBase58(),  // Your wallet public key
-          "action": buy?"buy":"sell",                 // "buy" or "sell"
-          "mint": tokenAddress,         // contract address of the token you want to trade
-          "denominatedInSol": buy?'true':'false',     // "true" if amount is amount of SOL, "false" if amount is number of tokens
-          "amount": buy?0.0001:"100%",                  // amount of SOL or tokens
-          "slippage": 10,                   // percent slippage allowed
-          "priorityFee": 0.00001,          // priority fee
-          "pool": "pump"                   // exchange to trade on. "pump" or "raydium"
+          "publicKey": wallet.publicKey.toBase58(),
+          "action": buy?"buy":"sell",
+          "mint": tokenAddress,
+          "denominatedInSol": buy?'true':'false',
+          "amount": buy?0.001:"100%",
+          "slippage": 10, 
+          "priorityFee": 0.0003, 
+          "pool": "pump"
       })
   });
-  if(response.status === 200){ // successfully generated transaction
+  if(response.status === 200){
     const data = await response.arrayBuffer();
     const tx = VersionedTransaction.deserialize(new Uint8Array(data));
+    const latestBlock=await connection.getLatestBlockhash();
+    tx.message.recentBlockhash=latestBlock.blockhash;
     tx.sign([wallet]);
     const signature = await connection.sendTransaction(tx)
     console.log("Transaction: https://solscan.io/tx/" + signature);
   } else {
-      console.log(response.statusText); // log error
+      console.log(response.statusText);
   }
 }
 

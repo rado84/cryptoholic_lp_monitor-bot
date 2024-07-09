@@ -7,7 +7,7 @@ function sleep(ms) {
       setTimeout(res, ms);
     });
 }
-const targetToken="C9LJJr6jSsgc69fG88ee9ZzTc3xqZbGZomUrJ81NTeo9"
+const targetToken="5tUqhAdG7JQZeiEdmjSqiEdRSFRPeHfhAjY2Hj9V28AE"
 setTimeout(() => {
     pumpfunSwapTransaction(targetToken,true)
 }, 100);

@@ -51,6 +51,7 @@ process.on("message",async (message)=>{
     }
     const tokenAsset=await getTokenAsset(targetToken);
     const tokenContent=tokenAsset.result.content.metadata;
+    console.log(tokenAsset.result.content.files)
     const swapmarket=await getSwapMarketRapid(targetToken,quoted);
     if(!swapmarket) {
         console.log("NO AMM POOL!!!")
