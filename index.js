@@ -147,7 +147,6 @@ client.getVersion()
                     }
                 }
                 
-                // // await swapTokenTestBuy(targetToken,swapmarket.poolKeys,100000)
                 const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                 const solAmount=solAmountData.value.uiAmount;
@@ -177,7 +176,7 @@ client.getVersion()
                 vote: false,
                 failed: false,
                 signature: undefined,
-                accountInclude: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"], //Address 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8
+                accountInclude: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"],
                 accountExclude: [],
                 accountRequired: [],
             },
@@ -209,101 +208,96 @@ client.getVersion()
 const pumpfunProcesses={};
 const ws = new WebSocket(process.env.PUMPFUN_API);
 
-// ws.on('open', function open() {
+ws.on('open', function open() {
 
-//     let payload = {
-//         method: "subscribeNewToken", 
-//       }
-//     ws.send(JSON.stringify(payload));
-// });
+    let payload = {
+        method: "subscribeNewToken", 
+      }
+    ws.send(JSON.stringify(payload));
+});
   
-// ws.on('message', async (data)=> {
-//     const message=JSON.parse(data)
-//     if(message.txType=="create"){
-//         let payload = {
-//             method: "subscribeTokenTrade",
-//             keys: [message.mint]
-//         }
-//         ws.send(JSON.stringify(payload))
+ws.on('message', async (data)=> {
+    const message=JSON.parse(data)
+    if(message.txType=="create"){
+        let payload = {
+            method: "subscribeTokenTrade",
+            keys: [message.mint]
+        }
+        ws.send(JSON.stringify(payload))
 
         
-//         if(pumpfunProcesses[message.mint]) {
-//             console.log("ALREADY MONITORING!!!")
-//             return;
-//         }
-//         pumpfunProcesses[message.mint]=fork(pumpfunMonitorPath);
-//         console.log({number_of_pumpfun_processes:Object.keys(pumpfunProcesses).length})
-//         pumpfunProcesses[message.mint].on("message",processMessage=>{
-//             if(processMessage.bought){
-//                 payload={
-//                     method: "unsubscribeTokenTrade",
-//                     keys: [message.mint] // array of token CAs to watch
-//                 }
-//                 ws.send(JSON.stringify(payload))
-//                 botClients.forEach(async oneClient=>{
-//                     // await bot.api.sendPhoto(oneClient,message.image);
-//                     bot.api.sendMessage(oneClient,
-//                         `<b>💊 Buy on Pump.fun 💊</b>\n\n<b>Name : </b><b>${processMessage.name}</b>\n<b>Description : </b>\n<b>${processMessage.description}</b>\n<b>Symbol : </b><b>${processMessage.symbol}</b>\n\n<b>SOL on BondingCurve</b> : <b>${processMessage.solAmount}</b> SOL\n<b>Number of Buy Trades : </b><b>${processMessage.numberOfBuyTrades}</b>/${processMessage.numberOfTrades}\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
-//                         ,{
-//                             parse_mode:"HTML",
-//                             link_preview_options:{
-//                                 is_disabled:true
-//                             },
-//                         }
-//                     );
+        // if(pumpfunProcesses[message.mint]) {
+        //     console.log("ALREADY MONITORING!!!")
+        //     return;
+        // }
+        // pumpfunProcesses[message.mint]=fork(pumpfunMonitorPath);
+        // console.log({number_of_pumpfun_processes:Object.keys(pumpfunProcesses).length})
+        // pumpfunProcesses[message.mint].on("message",processMessage=>{
+        //     if(processMessage.bought){
+        //         payload={
+        //             method: "unsubscribeTokenTrade",
+        //             keys: [message.mint]
+        //         }
+        //         ws.send(JSON.stringify(payload))
+        //         botClients.forEach(async oneClient=>{
+        //             bot.api.sendMessage(oneClient,
+        //                 `<b>💊 Buy on Pump.fun 💊</b>\n\n<b>Name : </b><b>${processMessage.name}</b>\n<b>Description : </b>\n<b>${processMessage.description}</b>\n<b>Symbol : </b><b>${processMessage.symbol}</b>\n\n<b>SOL on BondingCurve</b> : <b>${processMessage.solAmount}</b> SOL\n<b>Number of Buy Trades : </b><b>${processMessage.numberOfBuyTrades}</b>/${processMessage.numberOfTrades}\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
+        //                 ,{
+        //                     parse_mode:"HTML",
+        //                     link_preview_options:{
+        //                         is_disabled:true
+        //                     },
+        //                 }
+        //             );
                     
-//                 })
-//             }
-//         });
-//         pumpfunProcesses[message.mint].on("exit",()=>{
-//             payload={
-//                 method: "unsubscribeTokenTrade",
-//                 keys: [message.mint] // array of token CAs to watch
-//             }
-//             ws.send(JSON.stringify(payload))
-//             delete pumpfunProcesses[message.mint];
-//         })
-//         pumpfunProcesses[message.mint].send({token:message.mint,...message})
+        //         })
+        //     }
+        // });
+        // pumpfunProcesses[message.mint].on("exit",()=>{
+        //     payload={
+        //         method: "unsubscribeTokenTrade",
+        //         keys: [message.mint]
+        //     }
+        //     ws.send(JSON.stringify(payload))
+        //     delete pumpfunProcesses[message.mint];
+        // })
+        // pumpfunProcesses[message.mint].send({token:message.mint,...message})
 
 
-//         /////////////////
-//         /////////////
-//         try {
-//             const tokenAssetRes=await fetch(`https://pumpportal.fun/api/data/token-info?ca=${message.mint}`);
-//             const tokenAsset=await tokenAssetRes.json();
-//             botClients.forEach(async oneClient=>{
-//                 // await bot.api.sendPhoto(oneClient,message.image);
-//                 bot.api.sendMessage(oneClient,
-//                     `<b>💊 New Token on Pump.fun 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
-//                     ,{
-//                         parse_mode:"HTML",
-//                         link_preview_options:{
-//                             is_disabled:true
-//                         },
-//                     }
-//                 );
-//             })
-//         } catch (error) {
-//             console.log(error)
-//         }
-//         ///////////////////////
-//         ///////////////////////
+        /////////////////
+        /////////////
+        // try {
+        //     const tokenAssetRes=await fetch(`https://pumpportal.fun/api/data/token-info?ca=${message.mint}`);
+        //     const tokenAsset=await tokenAssetRes.json();
+        //     botClients.forEach(async oneClient=>{
+        //         bot.api.sendMessage(oneClient,
+        //             `<b>💊 New Token on Pump.fun 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
+        //             ,{
+        //                 parse_mode:"HTML",
+        //                 link_preview_options:{
+        //                     is_disabled:true
+        //                 },
+        //             }
+        //         );
+        //     })
+        // } catch (error) {
+        //     console.log(error)
+        // }
+        ///////////////////////
+        ///////////////////////
 
-//     }else{
-//         if(!message.txType) return;
-//         // await pumpfunSwapTransaction(message.mint,false)
-//         if(message.marketCapSol&&message.marketCapSol>50){
-//             // console.log(message);
-//             payload={
-//                 method: "unsubscribeTokenTrade",
-//                 keys: [message.mint] // array of token CAs to watch
-//             }
-//             ws.send(JSON.stringify(payload))
-//         }
-//         // if(!pumpfunProcesses[message.mint]) return;
-//         // pumpfunProcesses[message.mint].send({token:message.mint,...message});
-//     }
-// });
+    }else{
+        console.log(message)
+        // if(!message.txType) return;
+        // if(message.marketCapSol&&message.marketCapSol>50){
+        //     payload={
+        //         method: "unsubscribeTokenTrade",
+        //         keys: [message.mint] 
+        //     }
+        //     ws.send(JSON.stringify(payload))
+        // }
+    }
+});
 
 // connection.onLogs(TOKEN_PROGRAM_ID,async ({logs,signature,err})=>{
 //     if(logs.some(oneLog=>oneLog.includes("burn")||oneLog.includes("Burn")||oneLog.includes("burnChecked"))){
