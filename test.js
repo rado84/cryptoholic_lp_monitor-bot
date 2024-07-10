@@ -1,13 +1,25 @@
 require("dotenv").config
 const { Connection, PublicKey,Keypair } = require("@solana/web3.js");
 const { pumpfunSwapTransaction,getSwapMarketRapid, getSwapMarket, getJupiterPrice, getTokenAsset, getJupiterQuote, getBirdeyePrice } = require("./utils");
+const { swapTokenTestBuy, swapTokenRapid } = require("./swap");
 
 function sleep(ms) {
     return new Promise((res) => {
       setTimeout(res, ms);
     });
 }
-const targetToken="5tUqhAdG7JQZeiEdmjSqiEdRSFRPeHfhAjY2Hj9V28AE"
-setTimeout(() => {
-    pumpfunSwapTransaction(targetToken,true)
-}, 100);
+const targetToken="CyYebUmcQyQvXQqXWn4aDAcnLLhhGgfL13dqE3YATgep"
+
+getSwapMarket(targetToken)
+.then(swapMarket=>{
+    // console.log(swapMarket)
+    swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
+    // swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
+})
+// setTimeout(async () => {
+//     // pumpfunSwapTransaction(targetToken)
+//     const latest=await connection.getLatestBlockhash();
+//     const block=await helius_connection.getLatestBlockhash()
+//     console.log({o7node:latest})
+//     console.log({helius:block})
+// }, 100);

@@ -15,11 +15,16 @@ const {  LIQUIDITY_STATE_LAYOUT_V4, Liquidity,MARKET_STATE_LAYOUT_V3,Market,pool
 const WebSocket = require('ws');
 const Client=require("@triton-one/yellowstone-grpc");
 const { pumpfunSwapTransaction, getSwapMarketRapid } = require('./utils');
-const bs58=require("bs58")
+const bs58=require("bs58");
+const { swapTokenTestBuy } = require('./swap');
 
 const client =new Client.default("http://va.o7node.com:10000", "");
 
-
+function sleep(ms) {
+    return new Promise((res) => {
+      setTimeout(res, ms);
+    });
+}
 
 
 const connection = new web3.Connection(process.env.RPC_API);//Web3.js Connection
@@ -47,6 +52,7 @@ if(!fs.existsSync(path.resolve(__dirname,"logs"))){
 }
 
 var geyserSignatures=[];
+var geyserProcesses={}
 
 
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
@@ -95,7 +101,7 @@ client.getVersion()
             if(!transaction.meta) return;
             if(!transaction.meta.logMessages) return;
             if(transaction.meta.logMessages.some(log=>log.includes("initialize2"))){
-                
+                console.log({initialzed:sig})
                 const accounts = (transaction?.transaction.message.instructions).find(ix => ix.programId.toBase58() ===process.env.RAYDIUM_OPENBOOK_AMM).accounts;
             
                 if (!accounts) {
@@ -112,14 +118,42 @@ client.getVersion()
                 const quoted=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?true:false;
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken));
                 const tokenInfo=tokenInfoData.value.data.parsed.info;
-                if(tokenInfo.freezeAuthority) return;
-                if(tokenInfo.mintAuthority) return;
-                const swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                if(!swapmarket) return;
+                console.log({targetToken,quoted})
+                if(tokenInfo.freezeAuthority) {
+                    console.log("FROZEN From GEYSER!!!")
+                    return;
+                }
+                if(tokenInfo.mintAuthority) {
+                    console.log("NOT RENOUNCED FROM GEYSER!!!")
+                    return;
+                }
+                let swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                if(!swapmarket) {
+                    await sleep(200)
+                    swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                    if(!swapmarket) {
+                        await sleep(200)
+                        swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                        if(!swapmarket) {
+                            await sleep(200)
+                            swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                            if(!swapmarket) {
+                                console.log("NO SWAPMARKET!!!")
+                                return;
+                            }
+                        }
+                    }
+                }
                 console.log(`https://solscan.io/tx/${sig}`)
+                await swapTokenTestBuy(targetToken,swapmarket.poolKeys,100000)
+                const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
+                const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
+                const solAmount=solAmountData.value.uiAmount;
+                if(solAmount<80) return;
+                if(solAmount>900) return;
                 botClients.forEach(oneClient=>{
                     bot.api.sendMessage(oneClient,
-                    `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${swapmarket.poolKeys.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${swapmarket.poolKeys.id.toString()}" >DexScreener</a> \n`,
+                    `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${swapmarket.poolKeys.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${swapmarket.poolKeys.id.toString()}" >DexScreener</a> \n`,
                     {parse_mode:"HTML",link_preview_options:{is_disabled:true}})
                 })
             }
@@ -136,7 +170,16 @@ client.getVersion()
             owner: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"]
           }
         },
-        transactions: {},
+        transactions: {
+            // raydiumLiquidityPoolV4: {
+            //     vote: false,
+            //     failed: false,
+            //     signature: undefined,
+            //     accountInclude: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"], //Address 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8
+            //     accountExclude: [],
+            //     accountRequired: [],
+            // },
+        },
         blocks: {},
         blocksMeta: {},
         accountsDataSlice: [],

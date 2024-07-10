@@ -252,7 +252,7 @@ async function swapTokenRapid(tokenAddress,poolKeys_,amount=0.0001,buySol=false)
     if(typeof poolKeys_[oneKey]=='string') poolKeys[oneKey]=new PublicKey(poolKeys_[oneKey]);
   }
   // return console.log(poolKeys)
-  const connection = new Connection(process.env.O7NODE_RPC);
+  const connection = new Connection(process.env.RPC_API);
   
   const SOL_MINT_ADDRESS = 'So11111111111111111111111111111111111111112';
   const MYTOKEN_MINT_ADDRESS = tokenAddress; // Replace with your token's mint address
@@ -275,8 +275,8 @@ async function swapTokenRapid(tokenAddress,poolKeys_,amount=0.0001,buySol=false)
   );
   
   if(buySol)
-    txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: Number(process.env.SELL_FEE_LAMPORTS)}));
-  else txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: Number(process.env.BUY_FEE_LAMPORTS)}));
+    txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: Number(100000)}));
+  else txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: Number(100000)}));
   const accountInfo = await connection.getAccountInfo(solATA);
   // if (accountInfo) {
   //   txObject.add(
@@ -2069,7 +2069,7 @@ async function swapTokenTestBuy(tokenAddress,poolKeys_,amount) {
     if(typeof poolKeys_[oneKey]=='string') poolKeys[oneKey]=new PublicKey(poolKeys_[oneKey]);
   }
   // return console.log(poolKeys)
-  const connection = new Connection(process.env.O7NODE_RPC);
+  const connection = new Connection(process.env.RPC_API);
   
   const SOL_MINT_ADDRESS = 'So11111111111111111111111111111111111111112';
   const MYTOKEN_MINT_ADDRESS = tokenAddress; // Replace with your token's mint address
@@ -2099,7 +2099,7 @@ async function swapTokenTestBuy(tokenAddress,poolKeys_,amount) {
   
 
   const accountInfo = await connection.getAccountInfo(solATA);
-  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 20000}));
+  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 600000}));
   if (accountInfo) {
     txObject.add(
       createCloseAccountInstruction(
@@ -2261,87 +2261,84 @@ async function swapTokenTestBuy(tokenAddress,poolKeys_,amount) {
   ]
   const jito_tip_amount=BigInt(Number(process.env.JITO_TIP_AMOUNT))
   var jito_tip_account=new PublicKey(jito_tip_accounts[6]);
-  txObject.add(
-    SystemProgram.transfer({
-      fromPubkey:wallet.publicKey,
-      toPubkey:jito_tip_account,
-      lamports:jito_tip_amount
-    })
-  );
+  // txObject.add(
+  //   SystemProgram.transfer({
+  //     fromPubkey:wallet.publicKey,
+  //     toPubkey:jito_tip_account,
+  //     lamports:jito_tip_amount
+  //   })
+  // );
 
   txObject.feePayer = wallet.publicKey;
-  var latestBlock=await connection.getLatestBlockhash("confirmed");
+  var latestBlock=await connection.getLatestBlockhash();
   txObject.recentBlockhash=latestBlock.blockhash;
-  txObject.partialSign(wallet);
-  const serialized=bs58.encode(txObject.serialize());
-  let payload = {
-    jsonrpc: "2.0",
-    id: 1,
-    method: "sendBundle",
-    params: [[serialized]]
-  };
-  // https://jito-labs.gitbook.io/mev/searcher-resources/json-rpc-api-reference/url
-  const jito_endpoints = [
-    'https://mainnet.block-engine.jito.wtf/api/v1/bundles',
-    'https://amsterdam.mainnet.block-engine.jito.wtf/api/v1/bundles',
-    'https://frankfurt.mainnet.block-engine.jito.wtf/api/v1/bundles',
-    'https://ny.mainnet.block-engine.jito.wtf/api/v1/bundles',
-    'https://tokyo.mainnet.block-engine.jito.wtf/api/v1/bundles',
-  ];
-  var result=false;
-  for(var endpoint of jito_endpoints){
-    
-    try {
-      let res = await fetch(`${endpoint}`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const responseData=await res.json();
-      if(!responseData.error) {
-        console.log(`----------${endpoint}-------------`)
-        console.log(responseData)
-        console.log(`-----------------------------------`)
-        result=true;
-        break;
-      }else {
-        console.log(`----------${endpoint}-------------`)
-        console.log(responseData)
-        console.log(`-----------------------------------`)
-      }
-    } catch (error) {
-      console.log(`----------${endpoint}-------------`)
-      console.log(error)
-      console.log(`-----------------------------------`)
-    }
-  }
-  if(!result) return false;
-  return true;
-
-
-  // const messageV0 = new TransactionMessage({
-  //   payerKey: wallet.publicKey,
-  //   recentBlockhash: latestBlock.blockhash,
-  //   instructions:txObject.instructions,
-  // }).compileToV0Message();
-
-  // const tx = new VersionedTransaction(messageV0);
-  // tx.sign([wallet]);
   
-  // try {
-  //   const txnSignature = await connection.sendTransaction(tx,{maxRetries:3});
-  //   console.log(txnSignature)
-  //   const txResult=await connection.confirmTransaction({
-  //     signature: txnSignature,
-  //     blockhash: latestBlock.blockhash,
-  //     lastValidBlockHeight: latestBlock.lastValidBlockHeight,
-  //   });
-  //   console.log(txResult.value.err)
-  //   return true;
-  // } catch (error) {
-  //   console.log(error)
-  //   return false;
+  // txObject.partialSign(wallet);
+  // const serialized=bs58.encode(txObject.serialize());
+  // let payload = {
+  //   jsonrpc: "2.0",
+  //   id: 1,
+  //   method: "sendBundle",
+  //   params: [[serialized]]
+  // };
+
+  // // https://jito-labs.gitbook.io/mev/searcher-resources/json-rpc-api-reference/url
+  // const jito_endpoints = [
+  //   'https://mainnet.block-engine.jito.wtf/api/v1/bundles',
+  //   'https://amsterdam.mainnet.block-engine.jito.wtf/api/v1/bundles',
+  //   'https://frankfurt.mainnet.block-engine.jito.wtf/api/v1/bundles',
+  //   'https://ny.mainnet.block-engine.jito.wtf/api/v1/bundles',
+  //   'https://tokyo.mainnet.block-engine.jito.wtf/api/v1/bundles',
+  // ];
+  // var result=false;
+  // for(var endpoint of jito_endpoints){
+    
+  //   try {
+  //     let res = await fetch(`${endpoint}`, {
+  //       method: 'POST',
+  //       body: JSON.stringify(payload),
+  //       headers: { 'Content-Type': 'application/json' }
+  //     });
+  //     const responseData=await res.json();
+  //     if(!responseData.error) {
+  //       console.log(`----------${endpoint}-------------`)
+  //       console.log(responseData)
+  //       console.log(`-----------------------------------`)
+  //       result=true;
+  //       break;
+  //     }else {
+  //       console.log(`----------${endpoint}-------------`)
+  //       console.log(responseData)
+  //       console.log(`-----------------------------------`)
+  //     }
+  //   } catch (error) {
+  //     console.log(`----------${endpoint}-------------`)
+  //     console.log(error)
+  //     console.log(`-----------------------------------`)
+  //   }
   // }
+  // if(!result) return false;
+  // return true;
+
+
+  const messageV0 = new TransactionMessage({
+    payerKey: wallet.publicKey,
+    recentBlockhash: latestBlock.blockhash,
+    instructions:txObject.instructions,
+  }).compileToV0Message();
+
+  const tx = new VersionedTransaction(messageV0);
+  tx.message.recentBlockhash=latestBlock.blockhash
+  tx.sign([wallet]);
+  
+  try {
+    const txnSignature = await connection.sendTransaction(tx);
+    console.log(txnSignature)
+    return true;
+  } catch (error) {
+    console.log(error)
+    return false;
+  }
 }
 
 async function swapTokenThor(tokenAddress,poolKeys_,amount=0.0001,buySol=false) {

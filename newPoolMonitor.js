@@ -31,7 +31,6 @@ process.on("message",async (message)=>{
     var totalSupply;
     var largestHolders;
     var largestHoldingsPercentage=0
-    console.log(tokenInfo)
     const distribution=[];
     try {
         totalSupply=await connection.getTokenSupply(tokenPubkey)
@@ -51,7 +50,6 @@ process.on("message",async (message)=>{
     }
     const tokenAsset=await getTokenAsset(targetToken);
     const tokenContent=tokenAsset.result.content.metadata;
-    console.log(tokenAsset.result.content.files)
     const swapmarket=await getSwapMarketRapid(targetToken,quoted);
     if(!swapmarket) {
         console.log("NO AMM POOL!!!")
@@ -65,7 +63,6 @@ process.on("message",async (message)=>{
     var price=0;
     if(priceData&&priceData.data) price=Number(priceData.data.value);
     const marketCap=price*(totalSupply.value.uiAmount);
-    console.log({marketCap,lpValue:solAmount,poolId:swapmarket.poolKeys.id.toString()})
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),"New Pool\n");
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),`https://dexscreener.com/solana/${swapmarket.poolKeys.id.toBase58()}\n`);
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),`BASE MINT : ${swapmarket.poolInfo.baseMint.toString()}\n`);
