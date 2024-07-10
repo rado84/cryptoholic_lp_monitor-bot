@@ -115,6 +115,7 @@ client.getVersion()
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
                 const tokenInfo=tokenInfoData.value.data.parsed.info;
                 console.log({targetToken,quoted})
+                console.log(`https://solscan.io/tx/${sig}`)
                 if(tokenInfo.freezeAuthority) {
                     console.log("FROZEN From GEYSER!!!")
                     return;
@@ -145,7 +146,7 @@ client.getVersion()
                         }
                     }
                 }
-                console.log(`https://solscan.io/tx/${sig}`)
+                
                 // // await swapTokenTestBuy(targetToken,swapmarket.poolKeys,100000)
                 const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
