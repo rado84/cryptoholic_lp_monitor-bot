@@ -113,7 +113,7 @@ client.getVersion()
                 const tokenBAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenBIndex]]);
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
-                const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken));
+                const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
                 const tokenInfo=tokenInfoData.value.data.parsed.info;
                 console.log({targetToken,quoted})
                 if(tokenInfo.freezeAuthority) {
