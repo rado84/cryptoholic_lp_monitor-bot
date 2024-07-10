@@ -80,18 +80,14 @@ bot.command("finish",ctx=>{
     botClients.splice(chatIdIndex,1);
 })
 
-
 client.getVersion()
 .then(async version=>{
     console.log(version)
     const stream =await client.subscribe();
-
     stream.on("data", async (data) => {
-        // console.log(bs58.encode(data.transaction.transaction.signature))
         if(data.transaction&&data.transaction.transaction&&data.transaction.transaction.signature) {
             const sig=bs58.encode(data.transaction.transaction.signature)
             const transaction=data.transaction.transaction;
-            // console.log(transaction.meta.logMessages)
             if(transaction.meta.logMessages.some(log=>log.includes("initialize2"))){
                 var raydiumPoolProgramIndex=0;
                 transaction.transaction.message.accountKeys.map((account,index)=>{
@@ -104,10 +100,8 @@ client.getVersion()
                     console.log("No accounts found in the transaction.");
                     return;
                 }
-
                 const tokenAIndex = 8;
                 const tokenBIndex = 9;
-
                 const tokenAAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenAIndex]]);
                 const tokenBAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenBIndex]]);
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
@@ -126,25 +120,16 @@ client.getVersion()
                 }
                 console.log(tokenInfo)
                 let swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                if(!swapmarket) {
-                    await sleep(200)
+                var counter=0;
+                while(!swapmarket){
                     swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                    if(!swapmarket) {
-                        await sleep(200)
-                        swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                        if(!swapmarket) {
-                            await sleep(200)
-                            swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                            if(!swapmarket) {
-                                await sleep(200)
-                                swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                                if(!swapmarket) {
-                                    console.log("NO SWAPMARKET!!!")
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    sleep(100);
+                    counter++;
+                    if(counter==10) break;
+                }
+                if(!swapmarket){
+                    console.log("NO SWAP MARKET!!!");
+                    return;
                 }
                 
                 const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
@@ -225,7 +210,7 @@ ws.on('message', async (data)=> {
         }
         ws.send(JSON.stringify(payload))
 
-        
+        console.log(message)
         // if(pumpfunProcesses[message.mint]) {
         //     console.log("ALREADY MONITORING!!!")
         //     return;
