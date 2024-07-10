@@ -100,19 +100,19 @@ client.getVersion()
                         raydiumPoolProgramIndex=index;
                     }
                 })
-                // console.log({initialzed:sig})
                 const accounts = (transaction?.transaction.message.instructions).find(instruction =>instruction.programIdIndex==raydiumPoolProgramIndex ).accounts;
                 console.log(accounts[8],accounts[9])
-                // if (!accounts) {
-                //     console.log("No accounts found in the transaction.");
-                //     return;
-                // }
+                if (!accounts) {
+                    console.log("No accounts found in the transaction.");
+                    return;
+                }
 
-                // const tokenAIndex = 8;
-                // const tokenBIndex = 9;
+                const tokenAIndex = 8;
+                const tokenBIndex = 9;
 
-                // const tokenAAccount = accounts[tokenAIndex];
-                // const tokenBAccount = accounts[tokenBIndex];
+                const tokenAAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenAIndex]]);
+                const tokenBAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenBIndex]]);
+                console.log(tokenAAccount,tokenBAccount)
                 // const targetToken=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?tokenBAccount.toBase58():tokenAAccount.toBase58();
                 // const quoted=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?true:false;
                 // const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken));

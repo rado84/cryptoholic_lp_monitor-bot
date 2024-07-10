@@ -16,4 +16,5 @@ function sleep(ms) {
 //     swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
 //     // swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
 // })
-console.log(Buffer.from([11,12]))
+const my=Buffer.from([11,12])
+console.log(my[0],my[1])
