@@ -18,7 +18,7 @@ const { pumpfunSwapTransaction, getSwapMarketRapid } = require('./utils');
 const bs58=require("bs58");
 const { swapTokenTestBuy } = require('./swap');
 
-const client =new Client.default("http://va.o7node.com:10000", "");
+const client =new Client.default("http://68.170.144.218:10081", "");
 
 function sleep(ms) {
     return new Promise((res) => {
@@ -85,104 +85,112 @@ bot.command("finish",ctx=>{
 
 client.getVersion()
 .then(async version=>{
+    console.log(version)
     const stream =await client.subscribe();
 
-    // Collecting all incoming events.
     stream.on("data", async (data) => {
-        // console.log(data);
-        if(data.account&&data.account.account&&data.account.account.txnSignature) {
-            // console.log(`https://solscan.io/tx/${bs58.encode(data.account.account.txnSignature)}`)
-            const sig=bs58.encode(data.account.account.txnSignature)
-            if(geyserSignatures.some(signature=>signature==sig)) return;
-            geyserSignatures.push(sig);
-            if(geyserSignatures.length>100) geyserSignatures.shift();
-            const transaction=await connection.getParsedTransaction(sig,{maxSupportedTransactionVersion:0,commitment:"confirmed"});
+        // console.log(data.transaction.transaction.meta)
+        if(data.transaction&&data.transaction.transaction&&data.transaction.transaction.signature) {
+            const sig=bs58.encode(data.transaction.transaction.signature)
+            const transaction=data.transaction.transaction;
             // console.log(transaction.meta.logMessages)
-            if(!transaction.meta) return;
-            if(!transaction.meta.logMessages) return;
             if(transaction.meta.logMessages.some(log=>log.includes("initialize2"))){
-                console.log({initialzed:sig})
-                const accounts = (transaction?.transaction.message.instructions).find(ix => ix.programId.toBase58() ===process.env.RAYDIUM_OPENBOOK_AMM).accounts;
-            
-                if (!accounts) {
-                    console.log("No accounts found in the transaction.");
-                    return;
-                }
-
-                const tokenAIndex = 8;
-                const tokenBIndex = 9;
-
-                const tokenAAccount = accounts[tokenAIndex];
-                const tokenBAccount = accounts[tokenBIndex];
-                const targetToken=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?tokenBAccount.toBase58():tokenAAccount.toBase58();
-                const quoted=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?true:false;
-                const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken));
-                const tokenInfo=tokenInfoData.value.data.parsed.info;
-                console.log({targetToken,quoted})
-                if(tokenInfo.freezeAuthority) {
-                    console.log("FROZEN From GEYSER!!!")
-                    return;
-                }
-                if(tokenInfo.mintAuthority) {
-                    console.log("NOT RENOUNCED FROM GEYSER!!!")
-                    return;
-                }
-                let swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                if(!swapmarket) {
-                    await sleep(200)
-                    swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                    if(!swapmarket) {
-                        await sleep(200)
-                        swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                        if(!swapmarket) {
-                            await sleep(200)
-                            swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                            if(!swapmarket) {
-                                console.log("NO SWAPMARKET!!!")
-                                return;
-                            }
-                        }
+                var raydiumPoolProgramIndex=0;
+                transaction.transaction.message.accountKeys.map((account,index)=>{
+                    if(bs58.encode(account)==process.env.RAYDIUM_OPENBOOK_AMM){
+                        raydiumPoolProgramIndex=index;
                     }
-                }
-                console.log(`https://solscan.io/tx/${sig}`)
-                await swapTokenTestBuy(targetToken,swapmarket.poolKeys,100000)
-                const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
-                const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
-                const solAmount=solAmountData.value.uiAmount;
-                if(solAmount<80) return;
-                if(solAmount>900) return;
-                botClients.forEach(oneClient=>{
-                    bot.api.sendMessage(oneClient,
-                    `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${swapmarket.poolKeys.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${swapmarket.poolKeys.id.toString()}" >DexScreener</a> \n`,
-                    {parse_mode:"HTML",link_preview_options:{is_disabled:true}})
                 })
+                console.log(transaction.transaction.message.instructions)
+                // console.log({initialzed:sig})
+                const accounts = (transaction?.transaction.message.instructions).find(instruction =>instruction.programIdIndex==raydiumPoolProgramIndex ).accounts;
+                console.log(accounts)
+                // if (!accounts) {
+                //     console.log("No accounts found in the transaction.");
+                //     return;
+                // }
+
+                // const tokenAIndex = 8;
+                // const tokenBIndex = 9;
+
+                // const tokenAAccount = accounts[tokenAIndex];
+                // const tokenBAccount = accounts[tokenBIndex];
+                // const targetToken=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?tokenBAccount.toBase58():tokenAAccount.toBase58();
+                // const quoted=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?true:false;
+                // const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken));
+                // const tokenInfo=tokenInfoData.value.data.parsed.info;
+                // console.log({targetToken,quoted})
+                // if(tokenInfo.freezeAuthority) {
+                //     console.log("FROZEN From GEYSER!!!")
+                //     return;
+                // }
+                // if(tokenInfo.mintAuthority) {
+                //     console.log("NOT RENOUNCED FROM GEYSER!!!")
+                //     return;
+                // }
+                // let swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                // if(!swapmarket) {
+                //     await sleep(200)
+                //     swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                //     if(!swapmarket) {
+                //         await sleep(200)
+                //         swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                //         if(!swapmarket) {
+                //             await sleep(200)
+                //             swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                //             if(!swapmarket) {
+                //                 await sleep(200)
+                //                 swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                //                 if(!swapmarket) {
+                //                     console.log("NO SWAPMARKET!!!")
+                //                     return;
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+                // console.log(`https://solscan.io/tx/${sig}`)
+                // // await swapTokenTestBuy(targetToken,swapmarket.poolKeys,100000)
+                // const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
+                // const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
+                // const solAmount=solAmountData.value.uiAmount;
+                // if(solAmount<80) {
+                //     console.log("TO SMALL LP")
+                //     return;
+                // }
+                // if(solAmount>600) {
+                //     console.log("TOO BIG LP!!!")
+                //     return;
+                // }
+                // botClients.forEach(oneClient=>{
+                //     bot.api.sendMessage(oneClient,
+                //     `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${swapmarket.poolKeys.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${swapmarket.poolKeys.id.toString()}" >DexScreener</a> \n`,
+                //     {parse_mode:"HTML",link_preview_options:{is_disabled:true}})
+                // })
             }
         }
     });
     
     // Create a subscription request.
     const request =Client.SubscribeRequest.fromJSON({
-        slots: {
-          slots: {}
-        },
-        accounts: {
-          raydium: {
-            owner: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"]
-          }
-        },
+        accounts: {},
+        slots: {},
         transactions: {
-            // raydiumLiquidityPoolV4: {
-            //     vote: false,
-            //     failed: false,
-            //     signature: undefined,
-            //     accountInclude: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"], //Address 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8
-            //     accountExclude: [],
-            //     accountRequired: [],
-            // },
+            raydium: {
+            vote: false,
+            failed: false,
+            signature: undefined,
+            accountInclude: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"], //Address 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8
+            accountExclude: [],
+            accountRequired: [],
+            },
         },
+        transactionsStatus: {},
+        entry: {},
         blocks: {},
         blocksMeta: {},
         accountsDataSlice: [],
+        ping: undefined,
         commitment: Client.CommitmentLevel.CONFIRMED
     })
 
@@ -466,7 +474,7 @@ helius_connection.onLogs(raydium_program_id,async ({logs,signature,err})=>{
     if(logs.some(log=>log.includes("initialize2"))){
         try {
             const tx=await connection.getParsedTransaction(signature,{maxSupportedTransactionVersion:0});
-            const accounts = (tx?.transaction.message.instructions).find(ix => ix.programId.toBase58() ===process.env.RAYDIUM_OPENBOOK_AMM).accounts;
+            const accounts = (tx?.transaction?.message?.instructions).find(ix => ix.programId.toBase58() ===process.env.RAYDIUM_OPENBOOK_AMM).accounts;
             
             if (!accounts) {
                 console.log("No accounts found in the transaction.");
