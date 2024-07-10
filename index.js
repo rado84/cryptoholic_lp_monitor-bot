@@ -100,10 +100,9 @@ client.getVersion()
                         raydiumPoolProgramIndex=index;
                     }
                 })
-                console.log(transaction.transaction.message.instructions)
                 // console.log({initialzed:sig})
                 const accounts = (transaction?.transaction.message.instructions).find(instruction =>instruction.programIdIndex==raydiumPoolProgramIndex ).accounts;
-                console.log(accounts)
+                console.log(accounts[8],accounts[9])
                 // if (!accounts) {
                 //     console.log("No accounts found in the transaction.");
                 //     return;

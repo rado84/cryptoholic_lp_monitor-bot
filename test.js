@@ -8,18 +8,12 @@ function sleep(ms) {
       setTimeout(res, ms);
     });
 }
-const targetToken="CyYebUmcQyQvXQqXWn4aDAcnLLhhGgfL13dqE3YATgep"
+// const targetToken="CyYebUmcQyQvXQqXWn4aDAcnLLhhGgfL13dqE3YATgep"
 
-getSwapMarket(targetToken)
-.then(swapMarket=>{
-    // console.log(swapMarket)
-    swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
-    // swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
-})
-// setTimeout(async () => {
-//     // pumpfunSwapTransaction(targetToken)
-//     const latest=await connection.getLatestBlockhash();
-//     const block=await helius_connection.getLatestBlockhash()
-//     console.log({o7node:latest})
-//     console.log({helius:block})
-// }, 100);
+// getSwapMarket(targetToken)
+// .then(swapMarket=>{
+//     // console.log(swapMarket)
+//     swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
+//     // swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
+// })
+console.log(Buffer.from([11,12]))
