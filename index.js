@@ -123,6 +123,7 @@ client.getVersion()
                     console.log("NOT RENOUNCED FROM GEYSER!!!")
                     return;
                 }
+                console.log(tokenInfo)
                 let swapmarket=await getSwapMarketRapid(targetToken,quoted);
                 if(!swapmarket) {
                     await sleep(200)
