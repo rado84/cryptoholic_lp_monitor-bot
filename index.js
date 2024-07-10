@@ -172,12 +172,12 @@ client.getVersion()
         slots: {},
         transactions: {
             raydium: {
-            vote: false,
-            failed: false,
-            signature: undefined,
-            accountInclude: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"], //Address 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8
-            accountExclude: [],
-            accountRequired: [],
+                vote: false,
+                failed: false,
+                signature: undefined,
+                accountInclude: ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"], //Address 675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8
+                accountExclude: [],
+                accountRequired: [],
             },
         },
         transactionsStatus: {},
@@ -186,7 +186,7 @@ client.getVersion()
         blocksMeta: {},
         accountsDataSlice: [],
         ping: undefined,
-        commitment: Client.CommitmentLevel.PROCESSED
+        commitment: Client.CommitmentLevel.CONFIRMED
     })
 
     // Sending a subscription request.
