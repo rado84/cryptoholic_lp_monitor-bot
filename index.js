@@ -101,7 +101,6 @@ client.getVersion()
                     }
                 })
                 const accounts = (transaction?.transaction.message.instructions).find(instruction =>instruction.programIdIndex==raydiumPoolProgramIndex ).accounts;
-                console.log(accounts[8],accounts[9])
                 if (!accounts) {
                     console.log("No accounts found in the transaction.");
                     return;
@@ -112,59 +111,58 @@ client.getVersion()
 
                 const tokenAAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenAIndex]]);
                 const tokenBAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenBIndex]]);
-                console.log(tokenAAccount,tokenBAccount)
-                // const targetToken=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?tokenBAccount.toBase58():tokenAAccount.toBase58();
-                // const quoted=(tokenAAccount.toBase58()==SOL_MINT_ADDRESS)?true:false;
-                // const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken));
-                // const tokenInfo=tokenInfoData.value.data.parsed.info;
-                // console.log({targetToken,quoted})
-                // if(tokenInfo.freezeAuthority) {
-                //     console.log("FROZEN From GEYSER!!!")
-                //     return;
-                // }
-                // if(tokenInfo.mintAuthority) {
-                //     console.log("NOT RENOUNCED FROM GEYSER!!!")
-                //     return;
-                // }
-                // let swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                // if(!swapmarket) {
-                //     await sleep(200)
-                //     swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                //     if(!swapmarket) {
-                //         await sleep(200)
-                //         swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                //         if(!swapmarket) {
-                //             await sleep(200)
-                //             swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                //             if(!swapmarket) {
-                //                 await sleep(200)
-                //                 swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                //                 if(!swapmarket) {
-                //                     console.log("NO SWAPMARKET!!!")
-                //                     return;
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-                // console.log(`https://solscan.io/tx/${sig}`)
+                const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
+                const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
+                const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken));
+                const tokenInfo=tokenInfoData.value.data.parsed.info;
+                console.log({targetToken,quoted})
+                if(tokenInfo.freezeAuthority) {
+                    console.log("FROZEN From GEYSER!!!")
+                    return;
+                }
+                if(tokenInfo.mintAuthority) {
+                    console.log("NOT RENOUNCED FROM GEYSER!!!")
+                    return;
+                }
+                let swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                if(!swapmarket) {
+                    await sleep(200)
+                    swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                    if(!swapmarket) {
+                        await sleep(200)
+                        swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                        if(!swapmarket) {
+                            await sleep(200)
+                            swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                            if(!swapmarket) {
+                                await sleep(200)
+                                swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                                if(!swapmarket) {
+                                    console.log("NO SWAPMARKET!!!")
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                console.log(`https://solscan.io/tx/${sig}`)
                 // // await swapTokenTestBuy(targetToken,swapmarket.poolKeys,100000)
-                // const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
-                // const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
-                // const solAmount=solAmountData.value.uiAmount;
-                // if(solAmount<80) {
-                //     console.log("TO SMALL LP")
-                //     return;
-                // }
-                // if(solAmount>600) {
-                //     console.log("TOO BIG LP!!!")
-                //     return;
-                // }
-                // botClients.forEach(oneClient=>{
-                //     bot.api.sendMessage(oneClient,
-                //     `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${swapmarket.poolKeys.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${swapmarket.poolKeys.id.toString()}" >DexScreener</a> \n`,
-                //     {parse_mode:"HTML",link_preview_options:{is_disabled:true}})
-                // })
+                const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
+                const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
+                const solAmount=solAmountData.value.uiAmount;
+                if(solAmount<80) {
+                    console.log("TO SMALL LP")
+                    return;
+                }
+                if(solAmount>600) {
+                    console.log("TOO BIG LP!!!")
+                    return;
+                }
+                botClients.forEach(oneClient=>{
+                    bot.api.sendMessage(oneClient,
+                    `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${swapmarket.poolKeys.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${swapmarket.poolKeys.id.toString()}" >DexScreener</a> \n`,
+                    {parse_mode:"HTML",link_preview_options:{is_disabled:true}})
+                })
             }
         }
     });
