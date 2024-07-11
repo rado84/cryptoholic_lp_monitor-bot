@@ -44,7 +44,8 @@ const RAYDIUM_OPENBOOK_AMM=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
 const raydium_program_id=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
 
 const PUMPFUN_MARKET_CAP=80;//SOL
-const NUMBER_OF_BUY_TRADES=40
+const NUMBER_OF_BUY_TRADES=40//Number
+const NUMBER_OF_TRADES=45;
 
 
 
@@ -255,6 +256,10 @@ ws.on('message', async (data)=> {
         pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
         pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
         if(message.marketCapSol>PUMPFUN_MARKET_CAP){
+            if(pumpfunTokens[message.mint].numberOfBuyTrades<NUMBER_OF_BUY_TRADES){
+                console.log("NOT ENOUGH BUY TRADES!!!");
+                return;
+            }
             if(!pumpfunTokens[message.mint]) return;
             console.log(pumpfunTokens[message.mint])
             const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint].traderPublicKey));
@@ -267,7 +272,7 @@ ws.on('message', async (data)=> {
             }
             var tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
             // const tokenSupply=tokenSupplyData.value.uiAmount;
-            var tokenSupply=1000000000;
+            var tokenSupply;
             var tokenSupplyTimer=0;
             while (!tokenSupplyData) {
                 await sleep(50);
@@ -276,6 +281,10 @@ ws.on('message', async (data)=> {
                 tokenSupplyTimer++;
                 if(tokenSupplyTimer>=20) break;
             }
+            if(!tokenSupply){
+                console.log("FAILED TO GET TOKEN SUPPLY!!!")
+                return;
+            }
             // const tokenSupply=message.
             const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
             console.log({createOwnedPercentage})
@@ -283,7 +292,7 @@ ws.on('message', async (data)=> {
                 console.log("NO MONITOR!!!")
                 return;
             }
-            if((createOwnedPercentage<8)&&(pumpfunTokens[message.mint].numberOfBuyTrades>=NUMBER_OF_BUY_TRADES)&&((pumpfunTokens[message.mint].numberOfTrades-pumpfunTokens[message.mint].numberOfBuyTrades)>=5))
+            if((createOwnedPercentage<8))
                 botClients.forEach(async oneClient=>{
                     bot.api.sendMessage(oneClient,
                         `<b>💊 Pump.fun!!! 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<b>Market Cap : </b>${message.marketCapSol} SOL\n<b>Dev Owned : </b>${createOwnedPercentage} %\n<b>Number of Trades(Buy/Total) : </b>${pumpfunTokens[message.mint].numberOfBuyTrades} / ${pumpfunTokens[message.mint].numberOfTrades}\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
