@@ -238,7 +238,7 @@ ws.on('message', async (data)=> {
         pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
         console.log(pumpfunTokens[message.mint])
         if(message.marketCapSol>70){
-            const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint]));
+            const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint].traderPublicKey));
             const creatorAmountData=await connection.getTokenAccountBalance(creatorATA,"processed");
             const creatorAmount=creatorAmountData.value.uiAmount;
             const tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
