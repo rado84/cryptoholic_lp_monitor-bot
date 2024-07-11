@@ -18,7 +18,7 @@ const { pumpfunSwapTransaction, getSwapMarketRapid } = require('./utils');
 const bs58=require("bs58");
 const { swapTokenTestBuy } = require('./swap');
 
-const client =new Client.default("http://185.209.179.175:10005/", "");
+const client =new Client.default("http://169.197.88.102:10005/", "");
 
 function sleep(ms) {
     return new Promise((res) => {
