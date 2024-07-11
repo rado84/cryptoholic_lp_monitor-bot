@@ -11,7 +11,7 @@ const {
     createConversation,
 } = require("@grammyjs/conversations");
 const { TOKEN_PROGRAM_ID, AccountLayout, getAssociatedTokenAddressSync } = require('@solana/spl-token');
-const {  LIQUIDITY_STATE_LAYOUT_V4, Liquidity,MARKET_STATE_LAYOUT_V3,Market,poolKeys2JsonInfo} = require('@raydium-io/raydium-sdk');
+const {  LIQUIDITY_STATE_LAYOUT_V4, Liquidity,MARKET_STATE_LAYOUT_V3,Market,poolKeys2JsonInfo, ApiPoolInfoV4, SPL_MINT_LAYOUT} = require('@raydium-io/raydium-sdk');
 const WebSocket = require('ws');
 const Client=require("@triton-one/yellowstone-grpc");
 const { pumpfunSwapTransaction, getSwapMarketRapid } = require('./utils');
@@ -94,9 +94,11 @@ client.getVersion()
             if(transaction.meta.logMessages.some(log=>log.includes("initialize2"))){
                 var raydiumPoolProgramIndex=0;
                 console.log("----------------------------");
+                const allAccounts=[];
                 transaction.transaction.message.accountKeys.map((account,index)=>{
                     if(!account) return;
                     const accountID=bs58.encode(account);
+                    allAccounts.push(accountID);
                     console.log(accountID)
                     if(accountID==process.env.RAYDIUM_OPENBOOK_AMM){
                         raydiumPoolProgramIndex=index;
@@ -109,8 +111,51 @@ client.getVersion()
                 }
                 const tokenAIndex = 8;
                 const tokenBIndex = 9;
+                const marketKeyIndex = 16;
                 const tokenAAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenAIndex]]);
                 const tokenBAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenBIndex]]);
+                const marketAccountKey= bs58.encode(transaction.transaction.message.accountKeys[accounts[marketKeyIndex]]);
+
+                const [baseMintAccount, quoteMintAccount, marketAccount] = await connection.getMultipleAccountsInfo([
+                    new PublicKey(tokenAAccount),
+                    new PublicKey(tokenBAccount),
+                    new PublicKey(marketAccountKey),
+                ])
+
+                const baseMintInfo = SPL_MINT_LAYOUT.decode(baseMintAccount.data)
+                const quoteMintInfo = SPL_MINT_LAYOUT.decode(quoteMintAccount.data)
+                const marketInfo = MARKET_STATE_LAYOUT_V3.decode(marketAccount.data)
+
+                const poolInfos={
+                    id: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[4]])),
+                    baseMint: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[8]])),
+                    quoteMint: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[9]])),
+                    lpMint: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[7]])),
+                    baseDecimals: baseMintInfo.decimals,
+                    quoteDecimals: quoteMintInfo.decimals,
+                    lpDecimals: baseMintInfo.decimals,
+                    version: 4,
+                    programId: "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+                    authority: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[5]])),
+                    openOrders: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[6]])),
+                    targetOrders: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[12]])),
+                    baseVault: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[10]])),
+                    quoteVault: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[11]])),
+                    withdrawQueue: web3.PublicKey.default.toString(),
+                    lpVault: web3.PublicKey.default.toString(),
+                    marketVersion: 3,
+                    marketProgramId: marketAccount.owner.toString(),
+                    marketId: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[16]])),
+                    marketAuthority: Market.getAssociatedAuthority({ programId: marketAccount.owner, marketId: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[16]])) }).publicKey.toString(),
+                    marketBaseVault: marketInfo.baseVault.toString(),
+                    marketQuoteVault: marketInfo.quoteVault.toString(),
+                    marketBids: marketInfo.bids.toString(),
+                    marketAsks: marketInfo.asks.toString(),
+                    marketEventQueue: marketInfo.eventQueue.toString(),
+                    lookupTableAccount: web3.PublicKey.default.toString()
+                };
+                console.log(poolInfos)           
+
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
