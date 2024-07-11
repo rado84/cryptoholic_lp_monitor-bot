@@ -288,6 +288,7 @@ ws.on('message', async (data)=> {
         pumpfunTokens[message.mint].numberOfTrades=pumpfunTokens[message.mint].numberOfTrades+1;
         if(message.txType=="buy") pumpfunTokens[message.mint].numberOfBuyTrades=pumpfunTokens[message.mint].numberOfBuyTrades+1;
         if(message.marketCapSol>70){
+            console.log(message)
             try {
                 // const tokenAssetRes=await fetch(`https://pumpportal.fun/api/data/token-info?ca=${message.mint}`);
                 // const tokenAsset=await tokenAssetRes.json();
