@@ -319,7 +319,16 @@ ws.on('message', async (data)=> {
         }
     }
 });
-
+setTimeout(() => {
+    for(var token of Object.keys(pumpfunTokens)){
+        const currentTime=new Date();
+        const now=currentTime.getMilliseconds();
+        const created=pumpfunTokens[token].created;
+        if((now-created)>(30*60000)){
+            delete pumpfunTokens[token]
+        }
+    }
+}, 10*60000);
 // connection.onLogs(TOKEN_PROGRAM_ID,async ({logs,signature,err})=>{
 //     if(logs.some(oneLog=>oneLog.includes("burn")||oneLog.includes("Burn")||oneLog.includes("burnChecked"))){
 //         if(signature=="1111111111111111111111111111111111111111111111111111111111111111") return;
