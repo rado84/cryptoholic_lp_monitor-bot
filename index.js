@@ -82,7 +82,6 @@ bot.command("finish",ctx=>{
 
 client.getVersion()
 .then(async version=>{
-    console.log(version)
     const stream =await client.subscribe();
     stream.on("data", async (data) => {
         if(data.transaction&&data.transaction.transaction&&data.transaction.transaction.signature) {
@@ -123,7 +122,8 @@ client.getVersion()
                 swapmarket=await getSwapMarketRapid(targetToken,quoted);
                 var counter=0;
                 while(!swapmarket){
-                    sleep(100);
+                    await sleep(200);
+                    console.log("FAILED TO GET SWAPMARKET!!!, RETRYING!!!")
                     swapmarket=await getSwapMarketRapid(targetToken,quoted);
                     counter++;
                     if(counter==10) break;
@@ -132,7 +132,6 @@ client.getVersion()
                     console.log("NO SWAP MARKET!!!");
                     return;
                 }
-                
                 const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                 const solAmount=solAmountData.value.uiAmount;
