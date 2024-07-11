@@ -206,18 +206,18 @@ client.getVersion()
                 })
             }
             if(transaction.meta.logMessages.some(log=>log.includes("InitializeMint2"))){
-                console.log("-------------Pum.fun Mint---------------");
-                transaction.transaction.message.accountKeys.map((account,index)=>{
-                    if(!account) return;
-                    const accountID=bs58.encode(account);
-                    console.log(accountID)
-                    if(accountID==process.env.RAYDIUM_OPENBOOK_AMM){
-                        raydiumPoolProgramIndex=index;
-                    }
-                })
-                console.log(transaction?.transaction.message.instructions)
-                console.log(`https://solscan.io/tx/${sig}`)
-                console.log("----------------------------");
+                // console.log("-------------Pum.fun Mint---------------");
+                // transaction.transaction.message.accountKeys.map((account,index)=>{
+                //     if(!account) return;
+                //     const accountID=bs58.encode(account);
+                //     console.log(accountID)
+                //     if(accountID==process.env.RAYDIUM_OPENBOOK_AMM){
+                //         raydiumPoolProgramIndex=index;
+                //     }
+                // })
+                // console.log(transaction?.transaction.message.instructions)
+                // console.log(`https://solscan.io/tx/${sig}`)
+                // console.log("----------------------------");
             }
         }
     });
