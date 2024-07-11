@@ -219,7 +219,7 @@ ws.on('message', async (data)=> {
 
         // console.log(message)
         const currentTime=new Date();
-        const now=currentTime.getMilliseconds();
+        const now=currentTime.getTime();
         pumpfunTokens[message.mint]={
             ...message,
             numberOfTrades:0,
@@ -270,7 +270,7 @@ ws.on('message', async (data)=> {
 setTimeout(() => {
     for(var token of Object.keys(pumpfunTokens)){
         const currentTime=new Date();
-        const now=currentTime.getMilliseconds();
+        const now=currentTime.getTime()
         const created=pumpfunTokens[token].created;
         if((now-created)>(30*60000)){
             delete pumpfunTokens[token]
