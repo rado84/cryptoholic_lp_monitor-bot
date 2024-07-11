@@ -120,7 +120,7 @@ client.getVersion()
                     new web3.PublicKey(tokenAAccount),
                     new web3.PublicKey(tokenBAccount),
                     new web3.PublicKey(marketAccountKey),
-                ])
+                ],"processed")
 
                 const baseMintInfo = SPL_MINT_LAYOUT.decode(baseMintAccount.data)
                 const quoteMintInfo = SPL_MINT_LAYOUT.decode(quoteMintAccount.data)
