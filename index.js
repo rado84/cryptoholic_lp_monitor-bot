@@ -10,7 +10,7 @@ const {
     conversations,
     createConversation,
 } = require("@grammyjs/conversations");
-const { TOKEN_PROGRAM_ID, AccountLayout } = require('@solana/spl-token');
+const { TOKEN_PROGRAM_ID, AccountLayout, getAssociatedTokenAddressSync } = require('@solana/spl-token');
 const {  LIQUIDITY_STATE_LAYOUT_V4, Liquidity,MARKET_STATE_LAYOUT_V3,Market,poolKeys2JsonInfo} = require('@raydium-io/raydium-sdk');
 const WebSocket = require('ws');
 const Client=require("@triton-one/yellowstone-grpc");
@@ -218,7 +218,8 @@ ws.on('message', async (data)=> {
             ...message,
             numberOfTrades:0,
             numberOfBuyTrades:0,
-            created:now
+            created:now,
+            initMarketCapSol:message.marketCapSol
         }
         console.log({monitoringPumpfunTokens:Object.keys(pumpfunTokens).length})
         // if(pumpfunProcesses[message.mint]) {
@@ -287,11 +288,18 @@ ws.on('message', async (data)=> {
         if(!pumpfunTokens[message.mint]) return;
         pumpfunTokens[message.mint].numberOfTrades=pumpfunTokens[message.mint].numberOfTrades+1;
         if(message.txType=="buy") pumpfunTokens[message.mint].numberOfBuyTrades=pumpfunTokens[message.mint].numberOfBuyTrades+1;
+        pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
+        pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
+        console.log(pumpfunTokens[message.mint])
         if(message.marketCapSol>70){
-            console.log(message)
-            try {
-                // const tokenAssetRes=await fetch(`https://pumpportal.fun/api/data/token-info?ca=${message.mint}`);
-                // const tokenAsset=await tokenAssetRes.json();
+            const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint]));
+            const creatorAmountData=await connection.getTokenAccountBalance(creatorATA,"processed");
+            const creatorAmount=creatorAmountData.value.uiAmount;
+            const tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
+            const tokenSupply=tokenSupplyData.value.uiAmount;
+            const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
+            console.log({createOwnedPercentage})
+            if(createOwnedPercentage<8)
                 botClients.forEach(async oneClient=>{
                     bot.api.sendMessage(oneClient,
                         `<b>💊 Pump.fun!!! 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<b>Market Cap : </b>${message.marketCapSol} SOL\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
@@ -303,9 +311,6 @@ ws.on('message', async (data)=> {
                         }
                     );
                 })
-            } catch (error) {
-                console.log(error)
-            }
             payload={
                 method: "unsubscribeTokenTrade",
                 keys: [message.mint] 
@@ -313,9 +318,6 @@ ws.on('message', async (data)=> {
             ws.send(JSON.stringify(payload))
             delete pumpfunTokens[message.mint];
             console.log({monitoringPumpfunTokens:Object.keys(pumpfunTokens).length})
-        }else{
-            pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
-            pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
         }
     }
 });
