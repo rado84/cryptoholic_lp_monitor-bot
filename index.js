@@ -246,8 +246,6 @@ ws.on('message', async (data)=> {
         const now=currentTime.getTime();
         pumpfunTokens[message.mint]={
             ...message,
-            numberOfTrades:0,
-            numberOfBuyTrades:0,
             created:now,
             initMarketCapSol:message.marketCapSol,
             numberOfBuyTrades:0,
@@ -263,6 +261,7 @@ ws.on('message', async (data)=> {
         pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
         pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
         if(message.marketCapSol>PUMPFUN_MARKET_CAP){
+            if(!pumpfunTokens[message.mint]) return;
             console.log(pumpfunTokens[message.mint])
             const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint].traderPublicKey));
             var creatorAmount=0
