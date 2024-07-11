@@ -146,7 +146,7 @@ client.getVersion()
                     marketVersion: 3,
                     marketProgramId: marketAccount.owner,
                     marketId: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[16]])),
-                    marketAuthority: Market.getAssociatedAuthority({ programId: marketAccount.owner, marketId: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[16]])) }).publicKey.toString(),
+                    marketAuthority: Market.getAssociatedAuthority({ programId: marketAccount.owner, marketId: new web3.PublicKey(bs58.encode(transaction.transaction.message.accountKeys[accounts[16]])) }).publicKey,
                     marketBaseVault: marketInfo.baseVault,
                     marketQuoteVault: marketInfo.quoteVault,
                     marketBids: marketInfo.bids,
