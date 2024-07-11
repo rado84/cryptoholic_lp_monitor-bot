@@ -117,9 +117,9 @@ client.getVersion()
                 const marketAccountKey= bs58.encode(transaction.transaction.message.accountKeys[accounts[marketKeyIndex]]);
 
                 const [baseMintAccount, quoteMintAccount, marketAccount] = await connection.getMultipleAccountsInfo([
-                    new PublicKey(tokenAAccount),
-                    new PublicKey(tokenBAccount),
-                    new PublicKey(marketAccountKey),
+                    new web3.PublicKey(tokenAAccount),
+                    new web3.PublicKey(tokenBAccount),
+                    new web3.PublicKey(marketAccountKey),
                 ])
 
                 const baseMintInfo = SPL_MINT_LAYOUT.decode(baseMintAccount.data)
