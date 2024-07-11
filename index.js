@@ -122,8 +122,8 @@ client.getVersion()
                 let swapmarket=await getSwapMarketRapid(targetToken,quoted);
                 var counter=0;
                 while(!swapmarket){
-                    swapmarket=await getSwapMarketRapid(targetToken,quoted);
                     sleep(100);
+                    swapmarket=await getSwapMarketRapid(targetToken,quoted);
                     counter++;
                     if(counter==10) break;
                 }
