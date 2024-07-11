@@ -91,13 +91,13 @@ client.getVersion()
                 var raydiumPoolProgramIndex=0;
                 console.log("----------------------------");
                 transaction.transaction.message.accountKeys.map((account,index)=>{
+                    if(!account) return;
                     const accountID=bs58.encode(account);
                     console.log(accountID)
                     if(accountID==process.env.RAYDIUM_OPENBOOK_AMM){
                         raydiumPoolProgramIndex=index;
                     }
                 })
-                
                 const accounts = (transaction?.transaction.message.instructions).find(instruction =>instruction.programIdIndex==raydiumPoolProgramIndex ).accounts;
                 if (!accounts) {
                     console.log("No accounts found in the transaction.");
