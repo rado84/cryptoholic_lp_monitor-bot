@@ -236,7 +236,7 @@ ws.on('message', async (data)=> {
         if(message.txType=="buy") pumpfunTokens[message.mint].numberOfBuyTrades=pumpfunTokens[message.mint].numberOfBuyTrades+1;
         pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
         pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
-        if(message.marketCapSol>70){
+        if(message.marketCapSol>120){
             console.log(pumpfunTokens[message.mint])
             const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint].traderPublicKey));
             var creatorAmount=0
