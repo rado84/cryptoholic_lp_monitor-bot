@@ -265,8 +265,18 @@ ws.on('message', async (data)=> {
             } catch (error) {
                 
             }
-            const tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
-            const tokenSupply=tokenSupplyData.value.uiAmount;
+            var tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
+            // const tokenSupply=tokenSupplyData.value.uiAmount;
+            var tokenSupply=1000000000;
+            var tokenSupplyTimer=0;
+            while (!tokenSupplyData) {
+                await sleep(50);
+                tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
+                tokenSupply=tokenSupplyData.value.uiAmount;
+                tokenSupplyTimer++;
+                if(tokenSupplyTimer>=20) break;
+            }
+            // const tokenSupply=message.
             const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
             console.log({createOwnedPercentage})
             if(!pumpfunTokens[message.mint]) {
