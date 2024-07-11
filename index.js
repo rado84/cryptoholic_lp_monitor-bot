@@ -152,7 +152,6 @@ client.getVersion()
                     marketBids: marketInfo.bids,
                     marketAsks: marketInfo.asks,
                     marketEventQueue: marketInfo.eventQueue,
-                    lookupTableAccount: web3.PublicKey.default
                 };
                 console.log(poolInfos)           
 
@@ -171,23 +170,23 @@ client.getVersion()
                     return;
                 }
                 console.log(tokenInfo)
-                let swapmarket;
-                swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                var counter=0;
-                while(!swapmarket){
-                    await sleep(200);
-                    console.log("FAILED TO GET SWAPMARKET!!!, RETRYING!!!")
-                    swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                    counter++;
-                    if(counter==10) break;
-                }
-                if(!swapmarket){
-                    console.log("NO SWAP MARKET!!!");
-                    return;
-                }
-                console.log(swapmarket.poolKeys)
-                console.log("----------------------------");
-                const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
+                // let swapmarket;
+                // swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                // var counter=0;
+                // while(!swapmarket){
+                //     await sleep(200);
+                //     console.log("FAILED TO GET SWAPMARKET!!!, RETRYING!!!")
+                //     swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                //     counter++;
+                //     if(counter==10) break;
+                // }
+                // if(!swapmarket){
+                //     console.log("NO SWAP MARKET!!!");
+                //     return;
+                // }
+                // console.log(swapmarket.poolKeys)
+                // console.log("----------------------------");
+                const solVault=(poolInfos.baseMint.toString()==SOL_MINT_ADDRESS)?poolInfos.baseVault:poolInfos.quoteVault;
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                 const solAmount=solAmountData.value.uiAmount;
                 console.log({solAmount})
@@ -201,7 +200,7 @@ client.getVersion()
                 // }
                 botClients.forEach(oneClient=>{
                     bot.api.sendMessage(oneClient,
-                    `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${swapmarket.poolKeys.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${swapmarket.poolKeys.id.toString()}" >DexScreener</a> \n`,
+                    `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${poolInfos.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${poolInfos.id.toString()}" >DexScreener</a> \n`,
                     {parse_mode:"HTML",link_preview_options:{is_disabled:true}})
                 })
             }
