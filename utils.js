@@ -184,28 +184,6 @@ const getSwapMarketRapid=async (tokenAddress,quoted)=>{
         ],
       },
   );
-  // if(accounts.length==0)
-  //     accounts=await connection.getProgramAccounts(
-  //         raydium_program_id,
-  //         {
-  //           commitment: 'confirmed',
-  //           filters: [
-  //             { dataSize: LIQUIDITY_STATE_LAYOUT_V4.span },
-  //             {
-  //               memcmp: {
-  //                 offset: LIQUIDITY_STATE_LAYOUT_V4.offsetOf('baseMint'),
-  //                 bytes: TOKEN_MINT_ADDRESS,
-  //               },
-  //             },
-  //             {
-  //               memcmp: {
-  //                 offset: LIQUIDITY_STATE_LAYOUT_V4.offsetOf('quoteMint'),
-  //                 bytes: SOL_MINT_ADDRESS,
-  //               },
-  //             },
-  //           ],
-  //         },
-  //     );
   if(!accounts[0]) {
     console.log("NO ACCOUNTS!!!");
     return null;
@@ -242,17 +220,11 @@ const getSwapMarketRapid=async (tokenAddress,quoted)=>{
       marketBids: marketInfo.bids,
       marketAsks: marketInfo.asks,
       marketEventQueue: marketInfo.eventQueue,
-      // baseReserve: poolInfo.baseReserve,
-      // quoteReserve: poolInfo.quoteReserve,
-      // lpReserve: poolInfo.lpReserve,
-      // openTime: poolInfo.openTime,
   };
 
   const id = poolKeys.poolId;
   delete poolKeys.poolId;
   poolKeys.id = id;
-  // const poolInfoJson=poolKeys2JsonInfo(poolInfo)
-  // console.log(poolKeys)
   return {poolInfo,marketInfo,poolKeys};
 }
 

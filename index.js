@@ -119,7 +119,8 @@ client.getVersion()
                     return;
                 }
                 console.log(tokenInfo)
-                let swapmarket=await getSwapMarketRapid(targetToken,quoted);
+                let swapmarket;
+                swapmarket=await getSwapMarketRapid(targetToken,quoted);
                 var counter=0;
                 while(!swapmarket){
                     sleep(100);
