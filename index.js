@@ -43,6 +43,9 @@ const SOL_MINT_PUBKEY=new web3.PublicKey(SOL_MINT_ADDRESS);
 const RAYDIUM_OPENBOOK_AMM=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
 const raydium_program_id=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
 
+const PUMPFUN_MARKET_CAP=140;//SOL
+const NUMBER_OF_BUY_TRADES=20
+
 
 
 if(!fs.existsSync(path.resolve(__dirname,"logs"))){
@@ -236,7 +239,7 @@ ws.on('message', async (data)=> {
         if(message.txType=="buy") pumpfunTokens[message.mint].numberOfBuyTrades=pumpfunTokens[message.mint].numberOfBuyTrades+1;
         pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
         pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
-        if(message.marketCapSol>120){
+        if(message.marketCapSol>PUMPFUN_MARKET_CAP){
             console.log(pumpfunTokens[message.mint])
             const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint].traderPublicKey));
             var creatorAmount=0
@@ -250,7 +253,7 @@ ws.on('message', async (data)=> {
             const tokenSupply=tokenSupplyData.value.uiAmount;
             const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
             console.log({createOwnedPercentage})
-            if((createOwnedPercentage<8)&&(pumpfunTokens[message.mint].numberOfBuyTrades>=20)&&((pumpfunTokens[message.mint].numberOfTrades-pumpfunTokens[message.mint].numberOfBuyTrades)>=5))
+            if((createOwnedPercentage<8)&&(pumpfunTokens[message.mint].numberOfBuyTrades>=NUMBER_OF_BUY_TRADES)&&((pumpfunTokens[message.mint].numberOfTrades-pumpfunTokens[message.mint].numberOfBuyTrades)>=5))
                 botClients.forEach(async oneClient=>{
                     bot.api.sendMessage(oneClient,
                         `<b>💊 Pump.fun!!! 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<b>Market Cap : </b>${message.marketCapSol} SOL\n<b>Dev Owned : </b>${createOwnedPercentage} %\n<b>Number of Trades(Buy/Total) : </b>${pumpfunTokens[message.mint].numberOfBuyTrades} / ${pumpfunTokens[message.mint].numberOfTrades}\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
