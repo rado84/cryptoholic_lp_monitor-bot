@@ -212,10 +212,13 @@ ws.on('message', async (data)=> {
         ws.send(JSON.stringify(payload))
 
         // console.log(message)
+        const currentTime=new Date();
+        const now=currentTime.getMilliseconds();
         pumpfunTokens[message.mint]={
             ...message,
             numberOfTrades:0,
-            numberOfBuyTrades:0
+            numberOfBuyTrades:0,
+            created:now
         }
         console.log({monitoringPumpfunTokens:Object.keys(pumpfunTokens).length})
         // if(pumpfunProcesses[message.mint]) {
@@ -286,8 +289,8 @@ ws.on('message', async (data)=> {
         if(message.txType=="buy") pumpfunTokens[message.mint].numberOfBuyTrades=pumpfunTokens[message.mint].numberOfBuyTrades+1;
         if(message.marketCapSol>70){
             try {
-                const tokenAssetRes=await fetch(`https://pumpportal.fun/api/data/token-info?ca=${message.mint}`);
-                const tokenAsset=await tokenAssetRes.json();
+                // const tokenAssetRes=await fetch(`https://pumpportal.fun/api/data/token-info?ca=${message.mint}`);
+                // const tokenAsset=await tokenAssetRes.json();
                 botClients.forEach(async oneClient=>{
                     bot.api.sendMessage(oneClient,
                         `<b>💊 New Token on Pump.fun 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
