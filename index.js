@@ -294,7 +294,7 @@ ws.on('message', async (data)=> {
                 // const tokenAsset=await tokenAssetRes.json();
                 botClients.forEach(async oneClient=>{
                     bot.api.sendMessage(oneClient,
-                        `<b>💊 New Token on Pump.fun 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
+                        `<b>💊 Pump.fun!!! 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<b>Market Cap : </b>${message.marketCapSol} SOL\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
                         ,{
                             parse_mode:"HTML",
                             link_preview_options:{
