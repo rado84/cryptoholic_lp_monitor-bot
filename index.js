@@ -169,6 +169,8 @@ client.getVersion()
                         raydiumPoolProgramIndex=index;
                     }
                 })
+                console.log(transaction?.transaction.message.instructions)
+                console.log(`https://solscan.io/tx/${sig}`)
                 console.log("----------------------------");
             }
         }
