@@ -144,6 +144,7 @@ client.getVersion()
                 const solVault=(swapmarket.poolInfo.baseMint.toString()==SOL_MINT_ADDRESS)?swapmarket.poolInfo.baseVault:swapmarket.poolInfo.quoteVault;
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                 const solAmount=solAmountData.value.uiAmount;
+                console.log({solAmount})
                 if(solAmount<80) {
                     console.log("TO SMALL LP")
                     return;
