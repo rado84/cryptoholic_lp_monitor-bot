@@ -211,12 +211,13 @@ ws.on('message', async (data)=> {
         }
         ws.send(JSON.stringify(payload))
 
-        console.log(message)
+        // console.log(message)
         pumpfunTokens[message.mint]={
             ...message,
             numberOfTrades:0,
             numberOfBuyTrades:0
         }
+        console.log({monitoringPumpfunTokens:Object.keys(pumpfunTokens).length})
         // if(pumpfunProcesses[message.mint]) {
         //     console.log("ALREADY MONITORING!!!")
         //     return;
@@ -278,7 +279,7 @@ ws.on('message', async (data)=> {
         ///////////////////////
 
     }else{
-        console.log(message)
+        // console.log(message)
         if(!message.txType) return;
         if(!pumpfunTokens[message.mint]) return;
         pumpfunTokens[message.mint].numberOfTrades=pumpfunTokens[message.mint].numberOfTrades+1;
@@ -306,6 +307,8 @@ ws.on('message', async (data)=> {
                 keys: [message.mint] 
             }
             ws.send(JSON.stringify(payload))
+            delete pumpfunTokens[message.mint];
+            console.log({monitoringPumpfunTokens:Object.keys(pumpfunTokens).length})
         }else{
             pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
             pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
