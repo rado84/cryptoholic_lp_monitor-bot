@@ -145,10 +145,10 @@ client.getVersion()
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                 const solAmount=solAmountData.value.uiAmount;
                 console.log({solAmount})
-                // if(solAmount<80) {
-                //     console.log("TO SMALL LP")
-                //     return;
-                // }
+                if(solAmount<400) {
+                    console.log("TO SMALL LP")
+                    return;
+                }
                 // if(solAmount>600) {
                 //     console.log("TOO BIG LP!!!")
                 //     return;
