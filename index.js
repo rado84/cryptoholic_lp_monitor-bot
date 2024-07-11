@@ -269,6 +269,10 @@ ws.on('message', async (data)=> {
             const tokenSupply=tokenSupplyData.value.uiAmount;
             const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
             console.log({createOwnedPercentage})
+            if(!pumpfunTokens[message.mint]) {
+                console.log("NO MONITOR!!!")
+                return;
+            }
             if((createOwnedPercentage<8)&&(pumpfunTokens[message.mint].numberOfBuyTrades>=NUMBER_OF_BUY_TRADES)&&((pumpfunTokens[message.mint].numberOfTrades-pumpfunTokens[message.mint].numberOfBuyTrades)>=5))
                 botClients.forEach(async oneClient=>{
                     bot.api.sendMessage(oneClient,
