@@ -228,7 +228,9 @@ ws.on('message', async (data)=> {
             numberOfTrades:0,
             numberOfBuyTrades:0,
             created:now,
-            initMarketCapSol:message.marketCapSol
+            initMarketCapSol:message.marketCapSol,
+            numberOfBuyTrades:0,
+            numberOfTrades:0
         }
         console.log({monitoringPumpfunTokens:Object.keys(pumpfunTokens).length})
     }else{
