@@ -333,7 +333,7 @@ ws.on('message', async (data)=> {
         if(!pumpfunTokens[message.mint]) return;
         pumpfunTokens[message.mint].numberOfTrades=pumpfunTokens[message.mint].numberOfTrades+1;
         if(message.txType=="buy") pumpfunTokens[message.mint].numberOfBuyTrades=pumpfunTokens[message.mint].numberOfBuyTrades+1;
-        pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
+        // pumpfunTokens[message.mint].initMarketCapSol=pumpfunTokens[message.mint].marketCapSol;
         pumpfunTokens[message.mint].marketCapSol=message.marketCapSol;
         if(message.marketCapSol>PUMPFUN_MARKET_CAP){
             if(pumpfunTokens[message.mint].numberOfBuyTrades<NUMBER_OF_BUY_TRADES){
