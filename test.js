@@ -19,6 +19,6 @@ const connection=new Connection(process.env.RPC_API)
 
 setTimeout(async() => {
   // pumpfunSwapTransaction(targetToken,0.0001,true)
-  const largest=await connection.getTokenLargestAccounts(new PublicKey(targetToken),"processed")
+  const largest=await connection.getTokenLargestAccounts(new PublicKey(targetToken),"confirmed")
   console.log(largest.value)
 }, 1000);
