@@ -349,6 +349,10 @@ ws.on('message', async (data)=> {
                 console.log("NOT ENOUGH BUY TRADES!!!");
                 return;
             }
+            if((pumpfunTokens[message.mint].numberOfTrades-pumpfunTokens[message.mint].numberOfBuyTrades)<3){
+                console.log("NOT ENOUGH SELL TRADES!!!");
+                return;
+            }
             if(!pumpfunTokens[message.mint]) return;
             // console.log(pumpfunTokens[message.mint])
             const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint].traderPublicKey));
