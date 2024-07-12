@@ -129,19 +129,19 @@ client.getVersion()
                     new web3.PublicKey(marketAccountKey),
                 ],"processed");
                 if(!baseMintAccount){
-                    sleep(100);
+                    sleep(50);
                     baseMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenAAccount));
                 }
                 if(!quoteMintAccount){
-                    sleep(100);
+                    sleep(50);
                     quoteMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenBAccount));
                 }
                 if(!marketAccount){
-                    sleep(100)
+                    sleep(50)
                     marketAccount=await connection.getAccountInfo(new web3.PublicKey(marketAccountKey));
                 }
                 if(!marketAccount){
-                    sleep(100)
+                    sleep(50)
                     marketAccount=await connection.getAccountInfo(new web3.PublicKey(marketAccountKey));
                 }
                 if(!marketAccount){
@@ -205,13 +205,13 @@ client.getVersion()
                     solAmount=solAmountData.value.uiAmount;
                 } catch (error) {
                     console.log(error)
-                    sleep(100)
+                    sleep(50)
                     try {
                         const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                         solAmount=solAmountData.value.uiAmount;
                     } catch (error) {
                         console.log(error)
-                        sleep(100)
+                        sleep(50)
                         try {
                             const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                             solAmount=solAmountData.value.uiAmount;
