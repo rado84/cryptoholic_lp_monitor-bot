@@ -16,7 +16,7 @@ const WebSocket = require('ws');
 const Client=require("@triton-one/yellowstone-grpc");
 const { pumpfunSwapTransaction, getSwapMarketRapid } = require('./utils');
 const bs58=require("bs58");
-const { swapTokenTestBuy } = require('./swap');
+const { swapTokenTestBuy, swapTokenRapid } = require('./swap');
 
 const client =new Client.default("http://169.197.88.102:10005/", "");
 
@@ -154,7 +154,8 @@ client.getVersion()
                 // console.log(poolInfos)           
                 
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
-                await swapTokenTestBuy(targetToken,poolInfos,1000000);
+                // await swapTokenTestBuy(targetToken,poolInfos,1000000);
+                // await swapTokenRapid(targetToken,poolInfos,0.0001,false);
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
                 const tokenInfo=tokenInfoData.value.data.parsed.info;
