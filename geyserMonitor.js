@@ -29,6 +29,12 @@ process.on("message",async message=>{
     setInterval(async () => {
         const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
         const currentLP=currentLPData.value.uiAmount;
+        fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),`${currentLP}`);
+        const diff=currentLP-initLP;
+        const diffPercent=(diff/initLP)*100;
+        const diffPercentStr=diffPercent.toFixed(2);
+        fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),` ( ${diffPercentStr} %)\n`);
+        console.log(`${targetToken} ${diffPercentStr} %`)
         if((currentLP-initLP)>2){
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
             process.exit(0);
