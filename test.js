@@ -11,8 +11,8 @@ function sleep(ms) {
 const targetToken="PmS25n2WQp6EfVWuziwhaS388mX4U1KYtfNM5qF2NpK"
 
 getSwapMarket(targetToken)
-.then(swapMarket=>{
+.then(async swapMarket=>{
     // console.log(swapMarket)
     // swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
-    swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
+    await swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
 })
