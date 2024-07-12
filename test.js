@@ -9,7 +9,7 @@ function sleep(ms) {
     });
 }
 const targetToken="29Ue9AVrjbF6yP6taQ46y8DxwVrUoPD7RWgxNgnfpump"
-
+const connection=new Connection(process.env.RPC_API)
 // getSwapMarket(targetToken)
 // .then(async swapMarket=>{
 //     console.log(swapMarket)
@@ -17,6 +17,8 @@ const targetToken="29Ue9AVrjbF6yP6taQ46y8DxwVrUoPD7RWgxNgnfpump"
 //     // await swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
 // })
 
-setTimeout(() => {
-  pumpfunSwapTransaction(targetToken,0.0001,true)
+setTimeout(async() => {
+  // pumpfunSwapTransaction(targetToken,0.0001,true)
+  const largest=await connection.getTokenLargestAccounts(new PublicKey(targetToken),"processed")
+  console.log(largest.value)
 }, 1000);
