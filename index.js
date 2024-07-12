@@ -157,8 +157,6 @@ client.getVersion()
                 // console.log(poolInfos)           
                 
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
-                // await swapTokenTestBuy(targetToken,poolInfos,1000000);
-                swapTokenRapid(targetToken,poolInfos,0.0001,false);
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
                 const tokenInfo=tokenInfoData.value.data.parsed.info;
@@ -172,6 +170,8 @@ client.getVersion()
                     console.log("NOT RENOUNCED FROM GEYSER!!!")
                     return;
                 }
+                // await swapTokenTestBuy(targetToken,poolInfos,1000000);
+                swapTokenRapid(targetToken,poolInfos,0.0001,false);
                 console.log(tokenInfo)
                 const solVault=(poolInfos.baseMint.toString()==SOL_MINT_ADDRESS)?poolInfos.baseVault:poolInfos.quoteVault;
                 var solAmount=0;
