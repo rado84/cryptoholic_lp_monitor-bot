@@ -39,7 +39,7 @@ process.on("message",async message=>{
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
             process.exit(0);
         }
-        if((currentLP-initLP)<=(-5)){
+        if(((currentLP-initLP)<=(-5))&&(timer>=10)){
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
             process.exit(0);
         }
