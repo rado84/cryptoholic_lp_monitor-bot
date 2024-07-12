@@ -89,7 +89,7 @@ client.getVersion()
 .then(async version=>{
     const stream =await client.subscribe();
     stream.on("data", async (data) => {
-        console.log(data.trasaction.transaction)
+        console.log(data?.transaction?.transaction)
         return;
         if(data.transaction&&data.transaction.transaction&&data.transaction.transaction.signature) {
             const sig=bs58.encode(data.transaction.transaction.signature)
