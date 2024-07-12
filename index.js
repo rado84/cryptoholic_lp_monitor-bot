@@ -228,7 +228,7 @@ client.getVersion()
                 //     console.log("TOO BIG LP!!!")
                 //     return;
                 // }
-                swapTokenRapid(targetToken,poolInfos,0.06,false);
+                swapTokenRapid(targetToken,poolInfos,0.001,false);
                 var geyserMonitorProcess=fork(geyserMonitorPath);
                 geyserMonitorProcess.send({token:targetToken,quoted:quoted,poolKeys:poolInfos,initLP:solAmount});
                 geyserMonitorProcess.on("exit",()=>{
