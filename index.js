@@ -190,14 +190,14 @@ client.getVersion()
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                 const solAmount=solAmountData.value.uiAmount;
                 console.log({solAmount})
-                if(solAmount<200) {
-                    console.log("TO SMALL LP")
-                    return;
-                }
-                if(solAmount>600) {
-                    console.log("TOO BIG LP!!!")
-                    return;
-                }
+                // if(solAmount<200) {
+                //     console.log("TO SMALL LP")
+                //     return;
+                // }
+                // if(solAmount>600) {
+                //     console.log("TOO BIG LP!!!")
+                //     return;
+                // }
                 botClients.forEach(oneClient=>{
                     bot.api.sendMessage(oneClient,
                     `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${poolInfos.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${poolInfos.id.toString()}" >DexScreener</a> \n`,
