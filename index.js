@@ -90,6 +90,9 @@ client.getVersion()
     stream.on("data", async (data) => {
         if(data.transaction&&data.transaction.transaction&&data.transaction.transaction.signature) {
             const sig=bs58.encode(data.transaction.transaction.signature)
+            console.log(`https://solscan.io/tx/${sig}`)
+            const currentTime=new Date();
+            console.log(currentTime.getTime());
             const transaction=data.transaction.transaction;
             if(transaction.meta.logMessages.some(log=>log.includes("initialize2"))){
                 var raydiumPoolProgramIndex=0;
@@ -225,7 +228,7 @@ client.getVersion()
         blocksMeta: {},
         accountsDataSlice: [],
         ping: undefined,
-        commitment: Client.CommitmentLevel.CONFIRMED
+        commitment: Client.CommitmentLevel.PROCESSED
     })
 
     // Sending a subscription request.
