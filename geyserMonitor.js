@@ -20,14 +20,14 @@ process.on("message",async message=>{
     console.log(targetToken,quoted,poolKeys,solVaultPubkey)
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),"");
     if(initLP==0){
-        const initLPData=await connection.getTokenAccountBalance(solVaultPubkey);
+        const initLPData=await connection.getTokenAccountBalance(solVaultPubkey,"processed");
         initLP=initLPData.value.uiAmount;
     }
     
     prevLP=initLP;
     var timer=0;
     setInterval(async () => {
-        const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
+        const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey,"processed");
         const currentLP=currentLPData.value.uiAmount;
         fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),`${currentLP}`);
         const diff=currentLP-initLP;
