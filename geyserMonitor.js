@@ -18,7 +18,8 @@ process.on("message",async message=>{
     const solVaultPubkey=new PublicKey(solVault);
     const initLPData=await connection.getTokenAccountBalance(solVaultPubkey);
     initLP=initLPData.value.uiAmount;
-    prevLP=initLP;
+    var prevLP=initLP;
+    var timer=0;
     setInterval(async () => {
         const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
         const currentLP=currentLPData.value.uiAmount;
@@ -26,6 +27,10 @@ process.on("message",async message=>{
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
         }
         prevLP=currentLP;
+        timer++;
+        if(timer>=100){
+
+        }
     }, 1000);
 
 })

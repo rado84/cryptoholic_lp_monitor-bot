@@ -105,7 +105,12 @@ client.getVersion()
                         raydiumPoolProgramIndex=index;
                     }
                 })
-                const accounts = (transaction?.transaction.message.instructions).find(instruction =>instruction.programIdIndex==raydiumPoolProgramIndex ).accounts;
+                const swapInstruction = (transaction?.transaction.message.instructions).find(instruction =>instruction.programIdIndex==raydiumPoolProgramIndex);
+                if(!swapInstruction){
+                    console.log("NO_SWAP_INSTRUCTION");
+                    return;
+                }
+                const accounts=swapInstruction.accounts;
                 if (!accounts) {
                     console.log("No accounts found in the transaction.");
                     return;
