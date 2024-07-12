@@ -225,7 +225,7 @@ client.getVersion()
         blocksMeta: {},
         accountsDataSlice: [],
         ping: undefined,
-        commitment: Client.CommitmentLevel.CONFIRMED
+        commitment: Client.CommitmentLevel.PROCESSED
     })
 
     // Sending a subscription request.
