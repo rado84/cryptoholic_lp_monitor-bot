@@ -44,8 +44,8 @@ const SOL_MINT_PUBKEY=new web3.PublicKey(SOL_MINT_ADDRESS);
 const RAYDIUM_OPENBOOK_AMM=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
 const raydium_program_id=new web3.PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
 
-const PUMPFUN_MARKET_CAP=80;//SOL
-const NUMBER_OF_BUY_TRADES=30//Number
+const PUMPFUN_MARKET_CAP=70;//SOL
+const NUMBER_OF_BUY_TRADES=25//Number
 const NUMBER_OF_TRADES=30;
 
 
