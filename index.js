@@ -384,6 +384,7 @@ ws.on('message', async (data)=> {
                 return;
             }
             if((createOwnedPercentage<8))
+                pumpfunSwapTransaction(message.mint,0.0001,true)
                 botClients.forEach(async oneClient=>{
                     bot.api.sendMessage(oneClient,
                         `<b>💊 Pump.fun!!! 💊</b>\n\n\n\n<b>Mint : </b>\n\n<code>${message.mint}</code>\n\n<b>Market Cap : </b>${message.marketCapSol} SOL\n<b>Dev Owned : </b>${createOwnedPercentage} %\n<b>Number of Trades(Buy/Total) : </b>${pumpfunTokens[message.mint].numberOfBuyTrades} / ${pumpfunTokens[message.mint].numberOfTrades}\n\n<a href="https://solscan.io/token/${message.mint}">Solscan</a> | <a href="https://solscan.io/token/${message.bondingCurveKey}">BondingCurve</a> | <a href="https://pump.fun/${message.mint}">Pump.fun</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${message.bondingCurveKey}">Photon</a> \n`
