@@ -153,7 +153,7 @@ client.getVersion()
                     marketAsks: marketInfo.asks,
                     marketEventQueue: marketInfo.eventQueue,
                 };
-                console.log(poolInfos)           
+                // console.log(poolInfos)           
 
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
