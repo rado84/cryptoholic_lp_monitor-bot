@@ -15,25 +15,35 @@ process.on("message",async message=>{
     const targetToken=message.token;
     const quoted=message.quoted;
     const poolKeys=message.poolKeys;
+    initLP=message.initLP;
     const solVaultPubkey=new PublicKey((poolKeys.baseMint==SOL_MINT_ADDRESS)?poolKeys.baseVault:poolKeys.quoteVault);
     console.log(targetToken,quoted,poolKeys,solVaultPubkey)
     fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),"");
-    process.exit(0)
-    // const initLPData=await connection.getTokenAccountBalance(solVaultPubkey);
-    // initLP=initLPData.value.uiAmount;
-    // prevLP=initLP;
-    // var timer=0;
-    // setInterval(async () => {
-    //     const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
-    //     const currentLP=currentLPData.value.uiAmount;
-    //     if(currentLP-initLP>1){
-    //         await swapTokenRapid(targetToken,poolKeys,0.001,true);
-    //     }
-    //     prevLP=currentLP;
-    //     timer++;
-    //     if(timer>=100){
-
-    //     }
-    // }, 1000);
+    if(initLP==0){
+        const initLPData=await connection.getTokenAccountBalance(solVaultPubkey);
+        initLP=initLPData.value.uiAmount;
+    }
+    
+    prevLP=initLP;
+    var timer=0;
+    setInterval(async () => {
+        const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
+        const currentLP=currentLPData.value.uiAmount;
+        if((currentLP-initLP)>1){
+            await swapTokenRapid(targetToken,poolKeys,0.001,true);
+            process.exit(0);
+        }
+        if((currentLP-initLP)<=(-5)){
+            await swapTokenRapid(targetToken,poolKeys,0.001,true);
+            process.exit(0);
+        }
+        prevLP=currentLP;
+        timer++;
+        if(timer>=20){
+            await swapTokenRapid(targetToken,poolKeys,0.001,true);
+            process.exit(0);
+        }
+    }, 1000);
+    
 
 })

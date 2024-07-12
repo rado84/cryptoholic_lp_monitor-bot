@@ -205,13 +205,11 @@ client.getVersion()
                     solAmount=solAmountData.value.uiAmount;
                 } catch (error) {
                     console.log(error)
-                    sleep(50)
                     try {
                         const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                         solAmount=solAmountData.value.uiAmount;
                     } catch (error) {
                         console.log(error)
-                        sleep(50)
                         try {
                             const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                             solAmount=solAmountData.value.uiAmount;
@@ -230,9 +228,9 @@ client.getVersion()
                 //     console.log("TOO BIG LP!!!")
                 //     return;
                 // }
-                swapTokenRapid(targetToken,poolInfos,0.0001,false);
+                swapTokenRapid(targetToken,poolInfos,0.06,false);
                 var geyserMonitorProcess=fork(geyserMonitorPath);
-                geyserMonitorProcess.send({token:targetToken,quoted:quoted,poolKeys:poolInfos});
+                geyserMonitorProcess.send({token:targetToken,quoted:quoted,poolKeys:poolInfos,initLP:solAmount});
                 geyserMonitorProcess.on("exit",()=>{
                     console.log("EXITED")
                 })
