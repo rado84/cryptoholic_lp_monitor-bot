@@ -157,7 +157,7 @@ client.getVersion()
                 // console.log(poolInfos)           
                 
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
-                // await swapTokenTestBuy(targetToken,poolInfos,1000000);
+                await swapTokenTestBuy(targetToken,poolInfos,1000000);
                 // await swapTokenRapid(targetToken,poolInfos,0.0001,false);
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
