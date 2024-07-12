@@ -34,26 +34,26 @@ process.on("message",async message=>{
         initLP=initLPData.value.uiAmount;
     }
     const tokenAccount=await getAssociatedTokenAddressSync(new PublicKey(targetToken),wallet.publicKey);
-    let myAmount;
-    let myAmountTimer=0;
-    while(!myAmount){
-        sleep(100)
-        try {
-            const tokenAmountData=await connection.getTokenAccountBalance(tokenAccount);
-            myAmount=tokenAmountData.value.uiAmount
-        } catch (error) {
+    // let myAmount;
+    // let myAmountTimer=0;
+    // while(!myAmount){
+    //     sleep(50)
+    //     try {
+    //         const tokenAmountData=await connection.getTokenAccountBalance(tokenAccount);
+    //         myAmount=tokenAmountData.value.uiAmount
+    //     } catch (error) {
             
-        }
-        myAmountTimer++;
-        if(myAmountTimer>=300){
-            break;
-        }
-    };
-    if(!myAmount){
-        await swapTokenRapid(targetToken,poolKeys,0.001,true)
-        process.exit(0);
-    }
-    console.log({myAmount})
+    //     }
+    //     myAmountTimer++;
+    //     if(myAmountTimer>=20){
+    //         break;
+    //     }
+    // };
+    // if(!myAmount){
+    //     await swapTokenRapid(targetToken,poolKeys,0.001,true)
+    //     process.exit(0);
+    // }
+    // console.log({myAmount})
     prevLP=initLP;
     var timer=0;
     setInterval(async () => {
@@ -65,11 +65,11 @@ process.on("message",async message=>{
         const diffPercentStr=diffPercent.toFixed(2);
         fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),` ( ${diffPercentStr} %)\n`);
         console.log(`${targetToken} ${diffPercentStr} %`)
-        if((currentLP-initLP)>2){
+        if((currentLP-initLP)>2&&timer>=7){
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
             process.exit(0);
         }
-        if(((currentLP-initLP)<=(-5))){
+        if(((currentLP-initLP)<=(-5))&&timer>=7){
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
             process.exit(0);
         }

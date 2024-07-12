@@ -8,7 +8,7 @@ function sleep(ms) {
       setTimeout(res, ms);
     });
 }
-const targetToken="EVhUPED4N2ux3W66fExiQDn4yvyacVRyXXJg2f8QmdAs"
+const targetToken="4cGUQP6yHfjPCPpzXS2kr7FfoR6UaPXRmoGGDGM8vc2h"
 
 getSwapMarket(targetToken)
 .then(async swapMarket=>{
