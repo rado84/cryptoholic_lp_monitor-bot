@@ -128,21 +128,22 @@ client.getVersion()
                     new web3.PublicKey(tokenBAccount),
                     new web3.PublicKey(marketAccountKey),
                 ],"processed");
-                if(!baseMintAccount)
-                    {
-                        sleep(100);
-                        baseMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenAAccount));
-                    }
-                if(!quoteMintAccount)
-                    {
-                        sleep(100);
-                        quoteMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenBAccount));
-                    }
-                if(!marketAccount)
-                    {
-                        sleep(100)
-                        marketAccount=await connection.getAccountInfo(new web3.PublicKey(marketAccountKey));
-                    }
+                if(!baseMintAccount){
+                    sleep(100);
+                    baseMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenAAccount));
+                }
+                if(!quoteMintAccount){
+                    sleep(100);
+                    quoteMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenBAccount));
+                }
+                if(!marketAccount){
+                    sleep(100)
+                    marketAccount=await connection.getAccountInfo(new web3.PublicKey(marketAccountKey));
+                }
+                if(!marketAccount){
+                    sleep(100)
+                    marketAccount=await connection.getAccountInfo(new web3.PublicKey(marketAccountKey));
+                }
                 if(!marketAccount){
                     console.log("FAILED_TO_GET_MARKET");
                     return;
@@ -205,8 +206,20 @@ client.getVersion()
                 } catch (error) {
                     console.log(error)
                     sleep(100)
-                    const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
-                    solAmount=solAmountData.value.uiAmount;
+                    try {
+                        const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
+                        solAmount=solAmountData.value.uiAmount;
+                    } catch (error) {
+                        console.log(error)
+                        sleep(100)
+                        try {
+                            const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
+                            solAmount=solAmountData.value.uiAmount;
+                        } catch (error) {
+                            
+                        }
+                    }
+                    
                 }
                 console.log({solAmount})
                 if(solAmount<10) {
