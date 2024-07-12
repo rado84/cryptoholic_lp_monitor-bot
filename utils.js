@@ -244,7 +244,7 @@ const pumpfunSwapTransaction=async (tokenAddress,amount,buy=true)=>{
           "denominatedInSol": buy?'true':'false',
           "amount": buy?String(amount):"100%",
           "slippage": 10, 
-          "priorityFee": 0.0003, 
+          "priorityFee": 0.0004, 
           "pool": "pump"
       })
   });

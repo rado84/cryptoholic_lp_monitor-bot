@@ -8,11 +8,15 @@ function sleep(ms) {
       setTimeout(res, ms);
     });
 }
-const targetToken="4bAusdx18N844QaMEMnC4GYrpKeFC33u4EGPUqsgmgiL"
+const targetToken="29Ue9AVrjbF6yP6taQ46y8DxwVrUoPD7RWgxNgnfpump"
 
-getSwapMarket(targetToken)
-.then(async swapMarket=>{
-    console.log(swapMarket)
-    swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
-    // await swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
-})
+// getSwapMarket(targetToken)
+// .then(async swapMarket=>{
+//     console.log(swapMarket)
+//     swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
+//     // await swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
+// })
+
+setTimeout(() => {
+  pumpfunSwapTransaction(targetToken,0.0001,true)
+}, 1000);
