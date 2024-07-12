@@ -378,7 +378,7 @@ ws.on('message', async (data)=> {
             const currentTime=new Date();
             const now=currentTime.getTime()
             const timeDiff=now-createAt;
-            const timeDiffMins=Math.floor(timeDiff/60);
+            const timeDiffMins=Math.floor(timeDiff/60000);
             if((createOwnedPercentage<8))
                 pumpfunSwapTransaction(message.mint,0.0001,true)
                 botClients.forEach(async oneClient=>{
