@@ -229,11 +229,11 @@ client.getVersion()
                 //     return;
                 // }
                 swapTokenRapid(targetToken,poolInfos,0.001,false);
-                // var geyserMonitorProcess=fork(geyserMonitorPath);
-                // geyserMonitorProcess.send({token:targetToken,quoted:quoted,poolKeys:poolInfos,initLP:solAmount});
-                // geyserMonitorProcess.on("exit",()=>{
-                //     console.log("EXITED")
-                // })
+                var geyserMonitorProcess=fork(geyserMonitorPath);
+                geyserMonitorProcess.send({token:targetToken,quoted:quoted,poolKeys:poolInfos,initLP:solAmount});
+                geyserMonitorProcess.on("exit",()=>{
+                    console.log("EXITED")
+                })
                 botClients.forEach(oneClient=>{
                     bot.api.sendMessage(oneClient,
                     `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${poolInfos.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${poolInfos.id.toString()}" >DexScreener</a> \n`,
