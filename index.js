@@ -37,6 +37,7 @@ const newPoolMonitorProcesses={};
 const monitorProcessPath=path.resolve(__dirname,"monitor.js");
 const newPoolMonitorProcessPath=path.resolve(__dirname,"newPoolMonitor.js");
 const pumpfunMonitorPath=path.resolve(__dirname,"pumpfunMonitor.js")
+const geyserMonitorPath=path.resolve(__dirname,"geyserMonitor.js");
 
 const SOL_MINT_ADDRESS = 'So11111111111111111111111111111111111111112';
 const SOL_MINT_PUBKEY=new web3.PublicKey(SOL_MINT_ADDRESS);
@@ -142,8 +143,10 @@ client.getVersion()
                         sleep(100)
                         marketAccount=await connection.getAccountInfo(new web3.PublicKey(marketAccountKey));
                     }
-
-
+                if(!marketAccount){
+                    console.log("FAILED_TO_GET_MARKET");
+                    return;
+                }
                 const baseMintInfo = SPL_MINT_LAYOUT.decode(baseMintAccount.data)
                 const quoteMintInfo = SPL_MINT_LAYOUT.decode(quoteMintAccount.data)
                 const marketInfo = MARKET_STATE_LAYOUT_V3.decode(marketAccount.data)
@@ -192,7 +195,7 @@ client.getVersion()
                     return;
                 }
                 // await swapTokenTestBuy(targetToken,poolInfos,1000000);
-                swapTokenRapid(targetToken,poolInfos,0.0001,false);
+                
                 console.log(tokenInfo)
                 const solVault=(poolInfos.baseMint.toString()==SOL_MINT_ADDRESS)?poolInfos.baseVault:poolInfos.quoteVault;
                 var solAmount=0;
@@ -201,16 +204,25 @@ client.getVersion()
                     solAmount=solAmountData.value.uiAmount;
                 } catch (error) {
                     console.log(error)
+                    sleep(100)
+                    const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
+                    solAmount=solAmountData.value.uiAmount;
                 }
                 console.log({solAmount})
-                // if(solAmount<200) {
-                //     console.log("TO SMALL LP")
-                //     return;
-                // }
+                if(solAmount<10) {
+                    console.log("TO SMALL LP")
+                    return;
+                }
                 // if(solAmount>600) {
                 //     console.log("TOO BIG LP!!!")
                 //     return;
                 // }
+                swapTokenRapid(targetToken,poolInfos,0.0001,false);
+                var geyserMonitorProcess=fork(geyserMonitorPath);
+                geyserMonitorProcess.send({token:targetToken,quoted:quoted,poolKeys:poolInfos});
+                geyserMonitorProcess.on("exit",()=>{
+                    console.log("EXITED")
+                })
                 botClients.forEach(oneClient=>{
                     bot.api.sendMessage(oneClient,
                     `<b>💥 New Pool from GEYSER 💥</b>\n\n<b>Mint : </b>\n<code>${targetToken}</code>\n\n<b>LP Value : </b><b>${solAmount}</b> SOL \n\n<a href="https://solscan.io/tx/${sig}" >LP</a> | <a href="https://photon-sol.tinyastro.io/en/lp/${poolInfos.id.toString()}">Photon</a> | <a href="https://dexscreener.com/solana/${poolInfos.id.toString()}" >DexScreener</a> \n`,

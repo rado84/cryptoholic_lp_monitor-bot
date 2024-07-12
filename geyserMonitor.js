@@ -12,25 +12,27 @@ const SOL_MINT_PUBKEY=new PublicKey(SOL_MINT_ADDRESS);
 let initLP=0;
 let prevLP=0;
 process.on("message",async message=>{
-    const solVault=message.solVault;
     const targetToken=message.token;
+    const quoted=message.quoted;
     const poolKeys=message.poolKeys;
-    const solVaultPubkey=new PublicKey(solVault);
-    const initLPData=await connection.getTokenAccountBalance(solVaultPubkey);
-    initLP=initLPData.value.uiAmount;
-    var prevLP=initLP;
-    var timer=0;
-    setInterval(async () => {
-        const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
-        const currentLP=currentLPData.value.uiAmount;
-        if(currentLP-initLP>1){
-            await swapTokenRapid(targetToken,poolKeys,0.001,true);
-        }
-        prevLP=currentLP;
-        timer++;
-        if(timer>=100){
+    const solVaultPubkey=new PublicKey((poolKeys.baseMint==SOL_MINT_ADDRESS)?poolKeys.baseVault:poolKeys.quoteVault);
+    console.log(targetToken,quoted,poolKeys,solVaultPubkey)
+    process.exit(0)
+    // const initLPData=await connection.getTokenAccountBalance(solVaultPubkey);
+    // initLP=initLPData.value.uiAmount;
+    // prevLP=initLP;
+    // var timer=0;
+    // setInterval(async () => {
+    //     const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
+    //     const currentLP=currentLPData.value.uiAmount;
+    //     if(currentLP-initLP>1){
+    //         await swapTokenRapid(targetToken,poolKeys,0.001,true);
+    //     }
+    //     prevLP=currentLP;
+    //     timer++;
+    //     if(timer>=100){
 
-        }
-    }, 1000);
+    //     }
+    // }, 1000);
 
 })
