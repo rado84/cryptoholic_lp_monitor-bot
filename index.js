@@ -174,8 +174,13 @@ client.getVersion()
                 }
                 console.log(tokenInfo)
                 const solVault=(poolInfos.baseMint.toString()==SOL_MINT_ADDRESS)?poolInfos.baseVault:poolInfos.quoteVault;
-                const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
-                const solAmount=solAmountData.value.uiAmount;
+                var solAmount=0;
+                try {
+                    const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
+                    solAmount=solAmountData.value.uiAmount;
+                } catch (error) {
+                    console.log(error)
+                }
                 console.log({solAmount})
                 // if(solAmount<200) {
                 //     console.log("TO SMALL LP")
