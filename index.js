@@ -369,7 +369,7 @@ ws.on('message', async (data)=> {
             }
             // const tokenSupply=message.
             const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
-            const largestHoldersData=await connection.getTokenLargestAccounts(new web3.PublicKey(message.mint));
+            const largestHoldersData=await connection.getTokenLargestAccounts(new web3.PublicKey(message.mint),"processed");
             const largestHolders=largestHoldersData.value;
             const largestHoldersCount=largestHolders.length;
             if(!pumpfunTokens[message.mint]) {
