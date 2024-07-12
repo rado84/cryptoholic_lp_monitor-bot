@@ -222,7 +222,7 @@ client.getVersion()
                     
                 }
                 console.log({solAmount})
-                if(solAmount<10) {
+                if(solAmount<20) {
                     console.log("TO SMALL LP")
                     return;
                 }
