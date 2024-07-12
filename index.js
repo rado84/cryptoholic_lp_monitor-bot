@@ -117,11 +117,27 @@ client.getVersion()
                 const tokenBAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenBIndex]]);
                 const marketAccountKey= bs58.encode(transaction.transaction.message.accountKeys[accounts[marketKeyIndex]]);
 
-                const [baseMintAccount, quoteMintAccount, marketAccount] = await connection.getMultipleAccountsInfo([
+                var [baseMintAccount, quoteMintAccount, marketAccount] = await connection.getMultipleAccountsInfo([
                     new web3.PublicKey(tokenAAccount),
                     new web3.PublicKey(tokenBAccount),
                     new web3.PublicKey(marketAccountKey),
-                ],"processed")
+                ],"processed");
+                if(!baseMintAccount)
+                    {
+                        sleep(100);
+                        baseMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenAAccount));
+                    }
+                if(!quoteMintAccount)
+                    {
+                        sleep(100);
+                        quoteMintAccount=await connection.getAccountInfo(new web3.PublicKey(tokenBAccount));
+                    }
+                if(!marketAccount)
+                    {
+                        sleep(100)
+                        marketAccount=await connection.getAccountInfo(new web3.PublicKey(marketAccountKey));
+                    }
+
 
                 const baseMintInfo = SPL_MINT_LAYOUT.decode(baseMintAccount.data)
                 const quoteMintInfo = SPL_MINT_LAYOUT.decode(quoteMintAccount.data)
