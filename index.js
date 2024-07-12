@@ -366,8 +366,7 @@ ws.on('message', async (data)=> {
                 console.log("FAILED TO GET TOKEN SUPPLY!!!")
                 return;
             }
-            // const tokenSupply=message.
-            // const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
+            const createOwnedPercentage=(creatorAmount/tokenSupply)*100;
             // const largestHoldersData=await connection.getTokenLargestAccounts(new web3.PublicKey(message.mint),"processed");
             // const largestHolders=largestHoldersData.value;
             // const largestHoldersCount=largestHolders.length;
