@@ -154,8 +154,9 @@ client.getVersion()
                     marketEventQueue: marketInfo.eventQueue,
                 };
                 // console.log(poolInfos)           
-                swapTokenTestBuy(targetToken,poolInfos,1000000);
+                
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
+                swapTokenTestBuy(targetToken,poolInfos,1000000);
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
                 const tokenInfo=tokenInfoData.value.data.parsed.info;
