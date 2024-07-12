@@ -29,7 +29,7 @@ process.on("message",async message=>{
     setInterval(async () => {
         const currentLPData=await connection.getTokenAccountBalance(solVaultPubkey);
         const currentLP=currentLPData.value.uiAmount;
-        if((currentLP-initLP)>1){
+        if((currentLP-initLP)>2){
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
             process.exit(0);
         }
