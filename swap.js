@@ -403,10 +403,10 @@ async function swapTokenRapid(tokenAddress,poolKeys_,amount=0.0001,buySol=false)
   };
   // https://jito-labs.gitbook.io/mev/searcher-resources/json-rpc-api-reference/url
   const jito_endpoints = [
+    'https://ny.mainnet.block-engine.jito.wtf/api/v1/bundles',
     'https://mainnet.block-engine.jito.wtf/api/v1/bundles',
     'https://amsterdam.mainnet.block-engine.jito.wtf/api/v1/bundles',
     'https://frankfurt.mainnet.block-engine.jito.wtf/api/v1/bundles',
-    'https://ny.mainnet.block-engine.jito.wtf/api/v1/bundles',
     'https://tokyo.mainnet.block-engine.jito.wtf/api/v1/bundles',
   ];
   var result=false;

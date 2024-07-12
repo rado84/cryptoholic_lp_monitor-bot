@@ -8,9 +8,9 @@ function sleep(ms) {
       setTimeout(res, ms);
     });
 }
-const targetToken="AAfqeJ1CBgLfEzobedkQCtYY8LT9vW4yTv9EeZLBpump"
+const targetToken="7XVvDPKaqzjdwwdZBf6iEtXWUJsKTUawxFeaieRp4RQd"
 
-getSwapMarketRapid(targetToken,true)
+getSwapMarketRapid(targetToken,false)
 .then(async swapMarket=>{
     console.log(swapMarket)
     swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
