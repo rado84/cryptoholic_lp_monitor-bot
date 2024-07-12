@@ -359,16 +359,16 @@ ws.on('message', async (data)=> {
             var tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
             // const tokenSupply=tokenSupplyData.value.uiAmount;
             console.log({tokenSupplyData})
-            var tokenSupply;
+            var tokenSupply=tokenSupplyData?.value?.uiAmount;
             var tokenSupplyTimer=0;
-            while (!tokenSupplyData) {
-                await sleep(50);
-                tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
-                tokenSupply=tokenSupplyData.value.uiAmount;
-                console.log(`${message.mint} - supply - ${tokenSupply}`)
-                tokenSupplyTimer++;
-                if(tokenSupplyTimer>=20) break;
-            }
+            // while (!tokenSupplyData) {
+            //     await sleep(50);
+            //     tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
+            //     tokenSupply=tokenSupplyData.value.uiAmount;
+            //     console.log(`${message.mint} - supply - ${tokenSupply}`)
+            //     tokenSupplyTimer++;
+            //     if(tokenSupplyTimer>=20) break;
+            // }
             if(!tokenSupply){
                 console.log("FAILED TO GET TOKEN SUPPLY!!!")
                 return;
