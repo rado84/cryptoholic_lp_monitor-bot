@@ -90,8 +90,8 @@ client.getVersion()
     const stream =await client.subscribe();
     stream.on("data", async (data) => {
         const sig=bs58.encode(data.transaction.transaction.signature)
-        console.log(`https://solscan.io/tx/${sig}`)
-        return;
+        // console.log(`https://solscan.io/tx/${sig}`)
+        // return;
         if(data.transaction&&data.transaction.transaction&&data.transaction.transaction.signature) {
             
             const transaction=data.transaction.transaction;
