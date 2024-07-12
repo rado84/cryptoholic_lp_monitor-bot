@@ -370,10 +370,10 @@ ws.on('message', async (data)=> {
             // const largestHoldersData=await connection.getTokenLargestAccounts(new web3.PublicKey(message.mint),"processed");
             // const largestHolders=largestHoldersData.value;
             // const largestHoldersCount=largestHolders.length;
-            // if(!pumpfunTokens[message.mint]) {
-            //     console.log("NO MONITOR!!!")
-            //     return;
-            // }
+            if(!pumpfunTokens[message.mint]) {
+                console.log("NO MONITOR!!!")
+                return;
+            }
             const createAt=pumpfunTokens[message.mint].created;
             const currentTime=new Date();
             const now=currentTime.getTime()
