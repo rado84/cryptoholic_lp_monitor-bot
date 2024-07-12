@@ -228,7 +228,7 @@ const getSwapMarketRapid=async (tokenAddress,quoted)=>{
   return {poolInfo,marketInfo,poolKeys};
 }
 
-const pumpfunSwapTransaction=async (tokenAddress,buy=true)=>{
+const pumpfunSwapTransaction=async (tokenAddress,amount,buy=true)=>{
   const PRIVATE_KEY = Uint8Array.from(JSON.parse(process.env.PRIVATE_KEY));
   const connection=new Connection(process.env.RPC_API)
   const wallet = Keypair.fromSecretKey(PRIVATE_KEY);
@@ -242,7 +242,7 @@ const pumpfunSwapTransaction=async (tokenAddress,buy=true)=>{
           "action": buy?"buy":"sell",
           "mint": tokenAddress,
           "denominatedInSol": buy?'true':'false',
-          "amount": buy?0.001:"100%",
+          "amount": buy?String(amount):"100%",
           "slippage": 10, 
           "priorityFee": 0.0003, 
           "pool": "pump"
