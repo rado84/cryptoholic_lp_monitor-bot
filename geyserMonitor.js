@@ -40,7 +40,7 @@ process.on("message",async message=>{
         sleep(100)
         try {
             const tokenAmountData=await connection.getTokenAccountBalance(tokenAccount);
-            myAmount=tokenAccount
+            myAmount=tokenAmountData.value.uiAmount
         } catch (error) {
             
         }
