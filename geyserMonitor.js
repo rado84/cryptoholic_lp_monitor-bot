@@ -75,7 +75,7 @@ process.on("message",async message=>{
         }
         prevLP=currentLP;
         timer++;
-        if(timer>=20){
+        if(timer>=60){
             await swapTokenRapid(targetToken,poolKeys,0.001,true);
             process.exit(0);
         }
