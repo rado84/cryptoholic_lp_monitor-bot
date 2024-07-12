@@ -93,13 +93,11 @@ client.getVersion()
             const transaction=data.transaction.transaction;
             if(transaction.meta.logMessages.some(log=>log.includes("initialize2"))){
                 var raydiumPoolProgramIndex=0;
-                console.log("----------------------------");
                 const allAccounts=[];
                 transaction.transaction.message.accountKeys.map((account,index)=>{
                     if(!account) return;
                     const accountID=bs58.encode(account);
                     allAccounts.push(accountID);
-                    console.log(accountID)
                     if(accountID==process.env.RAYDIUM_OPENBOOK_AMM){
                         raydiumPoolProgramIndex=index;
                     }
@@ -171,22 +169,6 @@ client.getVersion()
                     return;
                 }
                 console.log(tokenInfo)
-                // let swapmarket;
-                // swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                // var counter=0;
-                // while(!swapmarket){
-                //     await sleep(200);
-                //     console.log("FAILED TO GET SWAPMARKET!!!, RETRYING!!!")
-                //     swapmarket=await getSwapMarketRapid(targetToken,quoted);
-                //     counter++;
-                //     if(counter==10) break;
-                // }
-                // if(!swapmarket){
-                //     console.log("NO SWAP MARKET!!!");
-                //     return;
-                // }
-                // console.log(swapmarket.poolKeys)
-                // console.log("----------------------------");
                 const solVault=(poolInfos.baseMint.toString()==SOL_MINT_ADDRESS)?poolInfos.baseVault:poolInfos.quoteVault;
                 const solAmountData=await connection.getTokenAccountBalance(solVault,"processed");
                 const solAmount=solAmountData.value.uiAmount;
