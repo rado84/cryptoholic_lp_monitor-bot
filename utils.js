@@ -68,7 +68,6 @@ const getSwapMarket=async (tokenAddress)=>{
     const TOKEN_MINT_ADDRESS = tokenAddress; // Replace with your token's mint address
     const raydium_program_id=new PublicKey(process.env.RAYDIUM_OPENBOOK_AMM);
     const raydium_auth=new PublicKey(process.env.RAYDIUM_AUTHORITY);
-    console.log("1")
     var accounts=await connection.getProgramAccounts(
         raydium_program_id,
         {
@@ -90,7 +89,6 @@ const getSwapMarket=async (tokenAddress)=>{
           ],
         },
     );
-    console.log("2")
     if(accounts.length==0)
         accounts=await connection.getProgramAccounts(
             raydium_program_id,
@@ -113,9 +111,7 @@ const getSwapMarket=async (tokenAddress)=>{
               ],
             },
         );
-        console.log("3")
     const poolInfo=LIQUIDITY_STATE_LAYOUT_V4.decode(accounts[0].account.data);
-    console.log("4")
     const marketAccountInfo = await connection.getAccountInfo(poolInfo.marketId);
     if (!marketAccountInfo) {
         return false;
