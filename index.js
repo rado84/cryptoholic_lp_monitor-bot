@@ -182,6 +182,10 @@ client.getVersion()
                 // console.log(poolInfos)           
                 
                 const targetToken=(tokenAAccount==SOL_MINT_ADDRESS)?tokenBAccount:tokenAAccount;
+                if(targetToken.endsWith("pump")){
+                    console.log("FROM_PUMPFUN");
+                    return;
+                }
                 const quoted=(tokenAAccount==SOL_MINT_ADDRESS)?true:false;
                 const tokenInfoData=await connection.getParsedAccountInfo(new web3.PublicKey(targetToken),"processed");
                 const tokenInfo=tokenInfoData.value.data.parsed.info;
