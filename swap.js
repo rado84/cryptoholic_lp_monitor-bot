@@ -2334,12 +2334,12 @@ async function swapTokenTestBuy(tokenAddress,poolKeys_,amount) {
   try {
     const txnSignature = await connection.sendTransaction(tx);
     console.log(txnSignature)
-    const x=await connection.confirmTransaction({
-      signature: txnSignature,
-      blockhash: latestBlock.blockhash,
-      lastValidBlockHeight: latestBlock.lastValidBlockHeight,
-    });
-    console.log(x)
+    // const x=await connection.confirmTransaction({
+    //   signature: txnSignature,
+    //   blockhash: latestBlock.blockhash,
+    //   lastValidBlockHeight: latestBlock.lastValidBlockHeight,
+    // });
+    // console.log(x)
     return true;
   } catch (error) {
     console.log(error)
