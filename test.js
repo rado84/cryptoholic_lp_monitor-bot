@@ -8,11 +8,11 @@ function sleep(ms) {
       setTimeout(res, ms);
     });
 }
-const targetToken="PmS25n2WQp6EfVWuziwhaS388mX4U1KYtfNM5qF2NpK"
+const targetToken="AAfqeJ1CBgLfEzobedkQCtYY8LT9vW4yTv9EeZLBpump"
 
-getSwapMarketRapid(targetToken,false)
+getSwapMarketRapid(targetToken,true)
 .then(async swapMarket=>{
     console.log(swapMarket)
-    // swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
-    await swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
+    swapTokenRapid(targetToken,swapMarket.poolKeys,0.001,true)
+    // await swapTokenTestBuy(targetToken,swapMarket.poolKeys,100000);
 })
