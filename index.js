@@ -305,7 +305,7 @@ ws.on('message', async (data)=> {
                 return;
             }
             if(!pumpfunTokens[message.mint]) return;
-            console.log(pumpfunTokens[message.mint])
+            // console.log(pumpfunTokens[message.mint])
             const creatorATA=await getAssociatedTokenAddressSync(new web3.PublicKey(message.mint),new web3.PublicKey(pumpfunTokens[message.mint].traderPublicKey));
             var creatorAmount=0
             try {
@@ -358,7 +358,7 @@ ws.on('message', async (data)=> {
         }
     }
 });
-setTimeout(() => {
+setInterval(() => {
     for(var token of Object.keys(pumpfunTokens)){
         const currentTime=new Date();
         const now=currentTime.getTime()
