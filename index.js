@@ -360,7 +360,6 @@ ws.on('message', async (data)=> {
                 
             }
             var tokenSupplyData=await connection.getTokenSupply(new web3.PublicKey(message.mint),"processed");
-            console.log({tokenSupplyData})
             var tokenSupply=tokenSupplyData?.value?.uiAmount;
             var tokenSupplyTimer=0;
             if(!tokenSupply){
