@@ -119,9 +119,9 @@ client.getVersion()
                 const tokenAIndex = 8;
                 const tokenBIndex = 9;
                 const marketKeyIndex = 16;
-                if(!accounts[tokenAIndex]) return;
-                if(!accounts[tokenBIndex]) return;
-                if(!accounts[marketKeyIndex]) return;
+                if(!transaction.transaction.message.accountKeys[accounts[tokenAIndex]]) return;
+                if(!transaction.transaction.message.accountKeys[accounts[tokenBIndex]]) return;
+                if(!transaction.transaction.message.accountKeys[accounts[marketKeyIndex]]) return;
                 const tokenAAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenAIndex]]);
                 const tokenBAccount = bs58.encode(transaction.transaction.message.accountKeys[accounts[tokenBIndex]]);
                 const marketAccountKey= bs58.encode(transaction.transaction.message.accountKeys[accounts[marketKeyIndex]]);
