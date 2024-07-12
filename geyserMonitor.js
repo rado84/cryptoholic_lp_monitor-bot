@@ -17,6 +17,7 @@ process.on("message",async message=>{
     const poolKeys=message.poolKeys;
     const solVaultPubkey=new PublicKey((poolKeys.baseMint==SOL_MINT_ADDRESS)?poolKeys.baseVault:poolKeys.quoteVault);
     console.log(targetToken,quoted,poolKeys,solVaultPubkey)
+    fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),"");
     process.exit(0)
     // const initLPData=await connection.getTokenAccountBalance(solVaultPubkey);
     // initLP=initLPData.value.uiAmount;
